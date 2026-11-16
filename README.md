@@ -1,9 +1,7 @@
 # Wynnling Beta
 
-This public repository hosts the Wynnling A1–A2 English practice beta on GitHub Pages.
+Public GitHub Pages beta for testers. The main Wynnling source repository is private.
 
-The development repository is private. Only the static beta assets are published here.
+This website is publicly accessible. The noindex directive discourages search indexing but does not restrict access or downloads.
 
-The site requests `noindex` from search engines, but it remains publicly accessible and its browser-delivered code is downloadable.
-
-All rights reserved. No public redistribution license is granted.
+All rights reserved.

@@ -1,0 +1,3 @@
+.topic-card .vocab-sticker{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:13px;background:#e4efff;font-size:25px;line-height:1;margin-bottom:7px}
+main h1 .vocab-sticker{display:inline-block;font-size:.65em;vertical-align:middle;margin-right:12px;background:#e9f2ff;padding:10px;border-radius:14px}
+.topic-card{position:relative}.topic-card .vocab-sticker{flex-shrink:0}

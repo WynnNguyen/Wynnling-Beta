@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap&subset=vietnamese');
+:root{font-family:'Be Vietnam Pro',Arial,sans-serif;color:#193b53;background:#f5fbff}
+body{background:linear-gradient(180deg,#edf8ff 0,#f8fcff 360px,#fff 100%)}
+h1,h2,h3,.brand,.flash .big{font-family:'Be Vietnam Pro',Arial,sans-serif;color:#123a56}
+.brand{color:#11658f}.brand span{color:#84a9c0!important}.logo{background:linear-gradient(140deg,#0e567e,#56b8db);box-shadow:0 6px 18px #87c8df50}
+.topright{border-color:#dbeef8;color:#5f91a9}.nav{color:#64839b}.nav.active{background:#dceffa;color:#0e618c}.nav:hover{background:#eaf6fd}
+.side-note{background:#dff2fb;color:#357897}.eyebrow{color:#397ea9}.card{border-color:#dcecf4;box-shadow:0 8px 27px #12567e08}
+p,.muted{color:#6e8ba0}.tag{background:#e0f1fc;color:#19749d}.tag.pink{background:#e4f6ff;color:#317fa5}.btn{background:#116d99}.btn.secondary{background:#e2f3fb;color:#156d98}.btn.outline{border-color:#cce6f3;color:#286f93}.lesson{border-color:#dcecf5}.num{background:#d9f0fb;color:#146b99}
+.progress{background:#e1f0f7}.progress>div{background:linear-gradient(90deg,#1674a1,#66c8e9)}.prompt{background:#ebf7fe;border-color:#cfeaf8}.hint{background:#eaf7fe;color:#315e79}.word{border-color:#cbe5f2}.answer{border-color:#cde3ef;color:#193b53}.answer:focus{border-color:#459fc7;box-shadow:0 0 0 3px #b9e4f57f}.flash{background:#eaf8ff;border-color:#cdeaf7}.flash h2{color:#176f9a!important}.stat{color:#1b83b0}.pill{background:#def2fa;color:#24799d}.note{color:#7895a5}
+.explain{margin-top:14px;padding:16px;border-radius:13px;background:#fff;border:1px solid #cce3ee;color:#35536a;line-height:1.75}.explain b{color:#176d96}.feedback{background:#e8f7f5;border-color:#bce7de}.feedback.review{background:#fff8eb;border-color:#f4dfb8}

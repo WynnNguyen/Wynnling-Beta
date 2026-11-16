@@ -1,0 +1,25 @@
+/* Compact desktop-first practice layout. */
+.shell{max-width:1240px;padding-top:18px}.top{margin-bottom:5px}.topnav{margin-bottom:13px;padding:6px 0 15px}
+main>.practice{width:min(100%,900px);max-width:900px;margin:0 auto}
+.practice>.eyebrow,.practice>.row:first-child{margin-top:0}
+.practice h1{font-size:clamp(25px,2.6vw,33px);margin:5px 0 10px;line-height:1.25}
+.practice .meter{margin:8px 0 14px}
+.practice>.card{padding:22px 25px;border-radius:17px}
+.practice .prompt{padding:16px 19px;margin:12px 0 15px;border-radius:13px}
+.practice .cloze{font-size:clamp(19px,2.2vw,24px);line-height:1.6}
+.practice .drill-banner{margin:0 0 12px;padding:10px 14px;border-radius:10px}
+.practice .drill-banner b{font-size:13px}.practice .drill-banner div{font-size:13px}
+.practice .short-answer{padding:11px 13px;font-size:15px}
+.practice .answer{min-height:84px;margin:8px 0 12px}
+.practice .check-next-row{margin-top:12px}
+.practice .feedback{padding:12px 15px;margin-top:13px;border-radius:11px}
+.practice .feedback strong{font-size:13px;margin-bottom:3px}.practice .feedback p{font-size:13px;margin:4px 0}
+.practice .drill-note{margin:8px 0 0;padding:11px 13px;border-radius:8px}
+.practice .drill-note b{font-size:13px}.practice .drill-note p{font-size:13px;line-height:1.55}
+.back-stack{display:flex!important;flex-direction:row!important;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
+.back-stack .btn{min-width:0;padding:9px 12px;text-align:center;font-size:12px}
+.practice .route-back{margin:7px 0 13px}
+.practice .footer-actions{margin-top:12px}
+.compact-result{display:flex;gap:8px;align-items:center;font-size:13px;color:#27764d;font-weight:800}
+.compact-result .correct-word{font-weight:600;color:#436f5b}
+@media(max-width:680px){.shell{padding:15px}.practice>.card{padding:16px}.back-stack .btn{font-size:11px}.practice h1{font-size:25px}.practice .prompt{padding:13px}}

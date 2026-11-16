@@ -1,0 +1,8 @@
+// Vocabulary-only subject stickers. The dashboard and other tabs stay minimal.
+function topicSticker(name){const value=name.toLowerCase();if(/family|people/.test(value))return '👨‍👩‍👧';if(/sport|movement/.test(value))return '🏀';if(/hobb|interest/.test(value))return '🎸';if(/home|chore/.test(value))return '🧹';if(/job|work|school/.test(value))return '💼';if(/habit|frequency/.test(value))return '📅';if(/around town/.test(value))return '🏙️';if(/routine/.test(value))return '🌅';if(/happening|now/.test(value))return '⏱️';if(/plan|tomorrow/.test(value))return '🗓️';if(/promise|help/.test(value))return '🤝';if(/invitation|decision/.test(value))return '🎉';if(/information/.test(value))return '❓';if(/prediction|hope/.test(value))return '🔭';return '📘'}
+function insertVocabSticker(target,name){if(!target||target.querySelector('.vocab-sticker'))return;const el=document.createElement('span');el.className='vocab-sticker';el.setAttribute('aria-hidden','true');el.textContent=topicSticker(name);target.prepend(el)}
+const prevVocabularyTopics17=vocabularyTopics;
+vocabularyTopics=function(){prevVocabularyTopics17();const topics=units.flatMap(u=>u.sessions);document.querySelectorAll('.topic-card').forEach((card,i)=>insertVocabSticker(card,topics[i]?.name||''))};
+const prevVocabulary17=vocabulary;
+vocabulary=function(){prevVocabulary17();insertVocabSticker(document.querySelector('main h1'),current().name)};
+render();

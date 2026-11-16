@@ -1,0 +1,6 @@
+// Grammar reference supports both standalone drills and full session navigation.
+const priorGuide14=guide;
+guide=function(){priorGuide14();if(grammarContext!=='global')return;document.querySelectorAll('.formula-card').forEach((card,i)=>{const type=tenseGuides[drillTense].types[i]?.[0];const sessionBtn=card.querySelector(':scope > button');if(!type||!sessionBtn)return;const actions=document.createElement('div');actions.className='formula-actions';card.insertBefore(actions,sessionBtn);const practise=document.createElement('button');practise.className='btn small';practise.textContent=language==='vi'?'Luyện 5 câu →':'Practise 5 questions →';practise.setAttribute('onclick',`startDrill('${drillTense}','${type}')`);actions.append(practise,sessionBtn);sessionBtn.className='btn secondary small'})};
+const priorDrill14=drill;
+drill=function(){priorDrill14();if(grammarContext!=='global')return;const stack=document.querySelector('.practice .back-stack');if(stack)stack.innerHTML=`<button class="btn outline small" onclick="setTense('${drillTense}')">← ${language==='vi'?'Về tổng quan thì':'Back to tense overview'}</button><button class="btn outline small" onclick="navigate('grammarTopics')">← ${language==='vi'?'Tất cả các thì':'All tenses'}</button>`};
+render();
