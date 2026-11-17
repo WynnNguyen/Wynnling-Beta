@@ -73,6 +73,7 @@ function psT(k){return (psUI[language]||psUI.en)[k]||(psUI.en[k]||k)}
 const sessionNamesVI=["Sinh hoạt và thói quen","Gia đình và các mối quan hệ","Trường học và học tập","Công việc và nghề nghiệp","Sở thích và thời gian rảnh","Tính cách, cảm xúc và sở thích"];
 function psSessionName(p){return language==="vi"?sessionNamesVI[p.position]:p.name}
 function psExplain(reason){
+ if(window.WynnlingV21 && translationState.feedback?.message)return translationState.feedback.message;
  if(!reason)return psT("reasonWrong");
  if(/negative meaning|affirmative\/negative|not, don.t|never/i.test(reason))return psT("negWrong");
  if(/doesn.t\/does not with he|Use does\/doesn.t/i.test(reason))return psT("doWrong");
@@ -106,34 +107,8 @@ if(a===b)return 1;const x=a.split(" "),y=b.split(" ");const d=Array.from({length
 for(let i=1;i<=x.length;i++){let prev=d[0];d[0]=i;for(let j=1;j<=y.length;j++){const z=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,prev+(x[i-1]===y[j-1]?0:1));prev=z}}
 return 1-d[y.length]/Math.max(x.length,y.length,1)}
 function score(item,response){
-const raw=clean(response),target=canonical(item.model,item.dir),given=canonical(response,item.dir);
-if(!given)return{status:"wrong",similarity:0,reason:"Write a translation before checking."};
-const sim=similarity(target,given);
-if(negativeSign(target,item.dir)!==negativeSign(given,item.dir))
- return{status:"wrong",similarity:sim,reason:"The affirmative/negative meaning has changed. Check not, don't, doesn't, and never."};
-if(item.dir==="vi"){
- if(/\b(he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:don't|do not)\b/.test(raw))
-  return{status:"wrong",similarity:sim,reason:"Use doesn't/does not with he, she and it."};
- if(/\b(i|you|we|they)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:doesn't|does not)\b/.test(raw))
-  return{status:"wrong",similarity:sim,reason:"Use don't/do not with I, you, we and they."};
- if(/\b(?:he|she|it|(?:my|your|his|her|the)\s+(?:(?:older|younger|elder|little|big)\s+)?(?:sister|brother|mother|father|teacher|friend|manager|colleague))\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:have|go|wake|get|eat|brush|study|do|watch|work|play|help|enjoy|feel|worry|prefer|exercise|visit|prepare|earn|finish|collect|read|like|support|understand|respect|believe|agree|spend|share|live)\b/.test(raw))
-  return{status:"wrong",similarity:sim,reason:"With he/she/it in Present Simple affirmative sentences, conjugate the verb: has, goes, wakes, studies, etc."};
- if(/\b(?:he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:are|am)\b/.test(raw))
-  return{status:"wrong",similarity:sim,reason:"Use 'is' with he/she/it, not am/are."};
- if(/\b(?:i)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:is|are)\b/.test(raw))
-  return{status:"wrong",similarity:sim,reason:"Use 'am' with I."};
- const targetSub=/^(?:my|his|her|our|their|the)\s+\w+|^(?:i|you|we|they|he|she|it)\b/.exec(target);
- const givenSub=/^(?:my|his|her|our|their|the)\s+\w+|^(?:i|you|we|they|he|she|it)\b/.exec(given);
- if(targetSub&&givenSub&&targetSub[0]!==givenSub[0]){
-  const kin=(s)=>s.replace(/\b(older|elder|big)\b/g,"elder").replace(/\b(younger|little)\b/g,"little");
-  if(kin(targetSub[0])!==kin(givenSub[0]))return{status:"review",similarity:sim,reason:"Check that the subject and family relationship match the Vietnamese sentence."};
- }
- if(/\b(?:am|is|are)\s+(?:not\s+)?\w+ing\b/.test(given)&&!/\b(?:am|is|are)\s+(?:not\s+)?\w+ing\b/.test(target))
-  return{status:"review",similarity:sim,reason:"Check the tense: this lesson asks for a routine or general Present Simple meaning."};
-}
-if(target===given)return{status:"correct",similarity:1,reason:"Accepted: equivalent meaning, including recognized synonym phrases and contractions."};
-const outcome=sim>=.94?"correct":sim>=.68?"review":"wrong";
-return {status:outcome,similarity:sim,reason:outcome==="correct"?"Your meaning closely matches the reference; minor wording differences were accepted.":outcome==="review"?"Possible alternative phrasing. This offline checker cannot reliably assess all natural paraphrases, so compare the meaning and grammar with the reference.":"The answer differs significantly from the reference. Compare the subject, tense, verb and meaning."};
+ const r=window.WynnlingV21.grade({...item,rubric:{targetTense:"present-simple"}},response,language);
+ return {status:r.status,similarity:r.confidence,reason:r.message,code:r.code};
 }
 function formulaFor(item){
 const m=item.model.toLowerCase();if(item.dir==="en")return "Present Simple: S + V(s/es) | S + am/is/are | Do/Does + S + V₀?";
