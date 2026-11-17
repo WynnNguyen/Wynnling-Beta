@@ -9,20 +9,21 @@ const months=["January","February","March","April","May","June","July","August",
 const v=()=>language==="vi";
 const esc=x=>escapeHtml(String(x));
 function guide(){
- let arr=[];
+ // Keep genuinely useful vocabulary lists within Learn; no generic reference board.
  if(session===0){
-  arr=[...Array.from({length:20},(_,i)=>i+" — "+U.numWords(i)),...[20,30,40,50,60,70,80,90,100,1000].map(n=>n+" — "+U.numWords(n)),...Array.from({length:10},(_,i)=>(i+1)+" — "+U.ordinal(i+1))];
- }else if(session===1){
-  arr=[...days.map((day,i)=>day+" — "+vietDays[i]),...months.map((m,i)=>m+" — Tháng "+(i+1))];
- }else if(session===2){
-  arr=["07:00 — seven o'clock","07:05 — five past seven / seven oh five","07:15 — quarter past seven","07:30 — half past seven","07:45 — quarter to eight","07:50 — ten to eight","12:00 p.m. — noon","12:00 a.m. — midnight"];
- }else if(session===3){
-  arr=["5,000 ₫ — five thousand dong","25,500 ₫ — twenty-five thousand five hundred dong","105,000 ₫ — one hundred and five thousand dong","1,250,000 ₫ — one million two hundred and fifty thousand dong","How much is it? — Bao nhiêu tiền?"];
- }else{
-  arr=["What day is the appointment? — Cuộc hẹn vào thứ mấy?","What time does class start? — Lớp học bắt đầu lúc mấy giờ?","How much does it cost? — Giá bao nhiêu tiền?","When is your birthday? — Sinh nhật bạn vào ngày nào?"];
+  const basics=Array.from({length:20},(_,i)=>i+" — "+U.numWords(i));
+  const heading=v()?"Số cơ bản (0–19)":"Essential numbers (0–19)";
+  return '<section class="v25-reference"><h3>'+heading+'</h3><div class="v25-reference-list">'+basics.map(x=>'<span>'+esc(x)+'</span>').join("")+'</div></section>';
  }
- return '<details class="v22-guide"><summary>'+(v()?"Xem bảng kiến thức đầy đủ":"Full reference guide")+'</summary><div class="v22-ref-chips">'+arr.map(x=>'<span>'+esc(x)+'</span>').join("")+'</div>'+(session===1?'<p class="note">DD/MM/YYYY — '+(v()?"ngày/tháng/năm":"day/month/year")+'</p>':"")+'</details>';
+ if(session===1){
+  const heading=v()?"Thứ trong tuần":"Days of the week",monthHeading=v()?"Các tháng":"Months";
+  const daysHtml=days.map((name,i)=>'<span>'+esc(name)+' — '+esc(vietDays[i])+'</span>').join("");
+  const monthsHtml=months.map((name,i)=>'<span>'+esc(name)+' — '+(v()?"Tháng ":"Month ")+(i+1)+'</span>').join("");
+  return '<section class="v25-reference"><h3>'+heading+'</h3><div class="v25-reference-list">'+daysHtml+'</div><h3>'+monthHeading+'</h3><div class="v25-reference-list">'+monthsHtml+'</div></section>';
+ }
+ return '';
 }
+
 let round=0,chosenLeft=null,chosenRight=null,done=new Set(),pairs=[];
 function matchPairs(){
  const bank=U.banks[session],taken=bank.filter((_,i)=>i%3===round%3).slice(0,5);
@@ -58,7 +59,10 @@ window.v22MatchPick=(side,id)=>{
 function enhanceHub(){
  if(view!=="v22Hub")return;
  const sample=document.querySelector(".v22-samples");
- if(sample&&!document.querySelector(".v22-guide"))sample.insertAdjacentHTML("afterend",guide());
+ if(sample&&!document.querySelector(".v25-reference")){
+  const ref=guide();if(ref)sample.closest(".card")?.insertAdjacentHTML("beforeend",ref);
+ }
+ const oldBoard=document.querySelector(".v22-guide");if(oldBoard)oldBoard.remove();
  const modes=document.querySelector(".v22-mode-grid");
  if(modes&&!modes.querySelector(".v22-match-mode")){
   modes.insertAdjacentHTML("afterbegin",'<div class="card v22-match-mode"><h3>'+(v()?"Nối cặp":"Matching")+'</h3><p>'+(v()?"5 cặp mỗi lượt, luyện cách đọc và nhận diện số.":"Five pairs per round to practise recognition.")+'</p><button class="btn secondary" onclick="v22MatchStart()">'+(v()?"Bắt đầu":"Start")+' →</button></div>');
