@@ -1,0 +1,17 @@
+/* Wynnling v20 — compact, readable feedback and mobile controls. */
+.ps-v20 .feedback{padding:14px 16px;margin-top:14px}
+.ps-v20 .feedback strong{font-size:1rem;margin-bottom:4px}
+.ps-v20 .feedback p{margin:6px 0;line-height:1.5}
+.ps-v20 .feedback .explain{margin-top:8px;padding:10px 12px;line-height:1.45;font-size:.95rem}
+.ps-v20 .prompt h2{font-size:clamp(1.2rem,4.5vw,1.7rem);line-height:1.5;overflow-wrap:anywhere}
+.ps-v20 .tools,.ps-v20 .check-next-row,.ps-v20 .actions{display:flex;gap:8px;flex-wrap:wrap}
+.ps-v20 .btn.small{white-space:normal}
+.ps-v20 .vocab-entry{min-width:0}
+.ps-v20 .vocab-entry strong{overflow-wrap:anywhere}
+@media(max-width:520px){
+ .ps-v20 .card{padding:16px}
+ .ps-v20 .prompt{padding:14px}
+ .ps-v20 .feedback{padding:12px}
+ .ps-v20 .check-next-row .btn{flex:1 1 auto;padding:10px 12px}
+ .ps-v20 .tools .btn{flex:1 1 auto}
+}
