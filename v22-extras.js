@@ -26,7 +26,7 @@ function guide(){
 
 let round=0,chosenLeft=null,chosenRight=null,done=new Set(),pairs=[];
 function matchPairs(){
- const bank=U.banks[session],taken=bank.filter((_,i)=>i%3===round%3).slice(0,5);
+ const taken=U.freshQuestions(session,"match",5);
  pairs=taken.map((q,i)=>{
   let word,number;
   if(q.kind==="day"){word=q.value;number=vietDays[days.indexOf(q.value)]}
@@ -41,7 +41,7 @@ function matchPairs(){
  chosenLeft=chosenRight=null;done=new Set();
 }
 function matching(){
- const ordered=[...pairs.slice(2),...pairs.slice(0,2)];
+ const offset=1+(round%4),ordered=[...pairs.slice(offset),...pairs.slice(0,offset)];
  const render=(p,side)=>'<button class="match-choice '+(done.has(p.id)?"matched":(side==="left"?chosenLeft:chosenRight)===p.id?"selected":"")+'" '+(done.has(p.id)?"disabled":"")+' onclick="v22MatchPick(\''+side+'\','+p.id+')">'+esc(p[side==="left"?"word":"number"])+'</button>';
  shell('<div class="practice v22"><button class="btn outline small" onclick="v22Hub()">← '+(v()?"Về buổi học":"Back to session")+'</button><h1>'+esc(U.sessionData[session].title)+' · '+(v()?"Nối cặp":"Matching")+'</h1><p class="v22-vn">'+esc(U.sessionData[session].vn)+'</p><p>'+(v()?"Nối cách đọc tiếng Anh với giá trị tương ứng.":"Match each English expression with the corresponding value.")+'</p><div class="card"><div class="row"><span class="tag">'+done.size+'/5</span><span class="muted">'+(v()?"Lượt":"Round")+' '+(round+1)+'</span></div><div class="match-grid five" style="margin-top:15px"><div class="match-column">'+pairs.map(p=>render(p,"left")).join("")+'</div><div class="match-column">'+ordered.map(p=>render(p,"right")).join("")+'</div></div>'+(done.size===5?'<div class="actions" style="margin-top:15px"><button class="btn" onclick="v22MatchNext()">'+(v()?"Lượt tiếp theo":"Next round")+' →</button><button class="btn secondary" onclick="v22Hub()">'+(v()?"Hoàn thành":"Finish")+'</button></div>':"")+'</div></div>');
 }
