@@ -64,20 +64,24 @@ const guides=[
  ["American: November 17, 2026 → November seventeenth, twenty twenty-six","Anh-Mỹ: November 17, 2026 → November seventeenth, twenty twenty-six"],
  ["Use on for days/dates; in for months/years (on Monday, in November).","Dùng on với thứ/ngày; in với tháng/năm (on Monday, in November)."]
  ],instruction:["Numeric dates here use DD/MM/YYYY: day / month / year. For weekday and month names, translate from Vietnamese into English.","Ngày dạng số dùng DD/MM/YYYY: ngày / tháng / năm. Với thứ và tháng, hãy dịch từ tiếng Việt sang tiếng Anh."]},
- {title:["How to tell the time","Cách nói giờ"],rules:[
- ["HH:MM → hour + minutes: 7:05 = seven oh five","HH:MM → giờ + phút: 7:05 = seven oh five"],
- ["1–30 minutes: past → 7:15 = a quarter past seven","Từ phút 1–30: dùng past → 7:15 = a quarter past seven"],
- ["31–59 minutes: to + next hour → 7:45 = a quarter to eight","Từ phút 31–59: dùng to + giờ kế → 7:45 = a quarter to eight"],
- ["7:30 = half past seven; 7:00 = seven o'clock","7:30 = half past seven; 7:00 = seven o'clock"],
- ["a.m. = before noon; p.m. = after noon. 12 a.m. = midnight; 12 p.m. = noon.","a.m. = trước trưa; p.m. = sau trưa. 12 a.m. = nửa đêm; 12 p.m. = trưa."]
- ],instruction:["For digits, use 24-hour HH:MM. For words, use a natural English reading of the clock.","Đề yêu cầu chữ số: viết HH:MM theo 24 giờ. Đề yêu cầu chữ: viết cách đọc giờ tự nhiên bằng tiếng Anh."]},
- {title:["Reading VND prices","Cách đọc giá tiền Việt Nam"],rules:[
- ["Group digits in threes: 325,000 = 325 thousand","Chia số theo nhóm ba chữ số: 325,000 = 325 nghìn"],
- ["5,000 ₫ = five thousand dong","5.000 ₫ = five thousand dong"],
- ["25,500 ₫ = twenty-five thousand five hundred dong","25.500 ₫ = twenty-five thousand five hundred dong"],
- ["1,250,000 ₫ = one million two hundred and fifty thousand dong","1.250.000 ₫ = one million two hundred and fifty thousand dong"],
- ["Question: How much is it? Answer: It costs ... dong.","Hỏi: How much is it? Trả lời: It costs ... dong."]
- ],instruction:["Read the full amount, including hundreds and thousands. For a numerical answer, you can enter 325000 or 325,000.","Đọc đủ hàng trăm, nghìn, triệu. Khi nhập số tiền, có thể gõ 325000 hoặc 325,000."]},
+ {title:["Telling time: digital & conversational","Cách đọc giờ: kiểu số và kiểu past/to"],rules:[
+ ["DIGITAL: hour + minutes → 7:20 = seven twenty; 8:45 = eight forty-five.","KIỂU SỐ: giờ + phút → 7:20 = seven twenty; 8:45 = eight forty-five."],
+ ["When the minute is 01–09, say oh: 7:05 = seven oh five.","Khi phút từ 01–09, đọc oh: 7:05 = seven oh five."],
+ ["Exact hour: 7:00 = seven o'clock. Half-hour: 7:30 = seven thirty / half past seven.","Giờ chẵn: 7:00 = seven o'clock. Giờ rưỡi: 7:30 = seven thirty / half past seven."],
+ ["PAST: minute + past + hour → 7:20 = twenty past seven; 7:15 = (a) quarter past seven.","PAST: phút + past + giờ → 7:20 = twenty past seven; 7:15 = (a) quarter past seven."],
+ ["TO: remaining minutes + to + next hour → 7:45 = (a) quarter to eight; 7:50 = ten to eight.","TO: số phút còn lại + to + giờ kế → 7:45 = (a) quarter to eight; 7:50 = ten to eight."],
+ ["a.m. is before noon; p.m. is after noon. 12 a.m. = midnight, 12 p.m. = noon.","a.m. là trước trưa; p.m. là sau trưa. 12 a.m. = nửa đêm, 12 p.m. = trưa."]
+ ],instruction:["Both seven twenty and twenty past seven are correct for 7:20. In numerical questions, enter HH:MM in 24-hour time; 7.20 is also understood.","7:20 có thể đọc seven twenty hoặc twenty past seven. Khi nhập giờ dạng số, dùng HH:MM (24 giờ); 7.20 cũng được chấp nhận."]},
+ {title:["Money: understand the place values","Tiền tệ: hiểu các hàng số"],rules:[
+ ["100 = one hundred (một trăm).","100 = one hundred (một trăm)."],
+ ["1,000 = one thousand (một nghìn).","1.000 = one thousand (một nghìn)."],
+ ["10,000 = ten thousand (mười nghìn).","10.000 = ten thousand (mười nghìn)."],
+ ["100,000 = one hundred thousand (một trăm nghìn).","100.000 = one hundred thousand (một trăm nghìn)."],
+ ["1,000,000 = one million (một triệu).","1.000.000 = one million (một triệu)."],
+ ["Read groups of three from left to right: 325,000 = three hundred and twenty-five thousand.","Đọc các nhóm ba chữ số từ trái sang phải: 325.000 = three hundred and twenty-five thousand."],
+ ["Add dong to the complete price: 25,500 ₫ = twenty-five thousand five hundred dong.","Thêm dong ở cuối số tiền: 25.500 ₫ = twenty-five thousand five hundred dong."],
+ ["How much is it? → It costs ... dong.","How much is it? → It costs ... dong."]
+ ],instruction:["First identify million, thousand and hundred groups; then read the amount and add dong. Enter digits without punctuation or with thousand separators.","Nhận diện các hàng triệu, nghìn, trăm trước, sau đó đọc số và thêm dong. Có thể nhập chữ số liền nhau hoặc có dấu phân cách hàng nghìn."]},
  {title:["Real-life number skills","Ứng dụng trong giao tiếp"],rules:[
  ["Appointments: day + date + time (Thursday, November 19, at 3:30 p.m.)","Cuộc hẹn: thứ + ngày + giờ (Thursday, November 19, at 3:30 p.m.)"],
  ["Class timetables: on Monday at eight forty-five","Lịch học: on Monday at eight forty-five"],
