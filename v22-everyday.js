@@ -100,7 +100,7 @@ function hub(){
  const s=sessionData[state.session],p=progress();show('<button class="btn outline small" onclick="v22All()">← '+tr("back")+'</button><h1>'+d(s.title)+'</h1><p class="v22-vn">'+d(s.vn)+'</p><p>'+d(language==="vi"?s.vnIntro:s.intro)+'</p><div class="card"><h2>'+tr("learn")+'</h2><div class="v22-samples">'+sampleRows(s)+'</div><p class="note">'+tr("ready")+'</p></div><div class="v22-mode-grid"><div class="card"><h3>'+tr("practice")+'</h3><p>30 '+tr("questions")+' · '+tr("note")+'</p><button class="btn" onclick="v22Begin(\'practice\')">'+tr("start")+' →</button></div><div class="card"><h3>'+tr("listen")+'</h3><p>10 '+tr("questions")+' · '+(language==="vi"?"Nghe và nhập câu trả lời":"Listen and type the answer")+'</p><button class="btn secondary" onclick="v22Begin(\'listen\')">'+tr("start")+' →</button></div><div class="card"><h3>'+tr("test")+'</h3><p>'+(state.session===4?20:10)+' '+tr("questions")+' · '+tr("score")+': '+(p["assessment-"+state.session]??"—")+'</p><button class="btn outline" onclick="v22Begin(\'assessment\')">'+tr("start")+' →</button></div></div>');
 }
 function questionPrompt(q){
- if(state.mode==="listen")return language==="vi"?"Nghe âm thanh và nhập giá trị bằng số (hoặc thứ/ngày/tháng được đọc).":"Listen and type the number, day, month, date or time.";
+ if(state.mode==="listen")return language==="vi"?"Nghe âm thanh rồi nhập giá trị hoặc tên thứ/tháng được đọc.":"Listen and type the value or spoken day/month.";
  if(q.kind==="number")return q.mode==="digits"?(language==="vi"?"Viết số dưới đây bằng chữ số.":"Write the number in digits."):(language==="vi"?"Viết số dưới đây bằng tiếng Anh.":"Write this number in English.");
  if(q.kind==="ordinal")return q.mode==="digits"?(language==="vi"?"Viết số thứ tự dưới dạng số (1st, 2nd...).":"Write the ordinal in digits (1st, 2nd...)."):(language==="vi"?"Viết số thứ tự bằng tiếng Anh.":"Write the ordinal in words.");
  if(q.kind==="day")return language==="vi"?"Viết đúng tên thứ trong tuần.":"Write the weekday name.";
@@ -112,7 +112,7 @@ function questionPrompt(q){
 }
 function model(q){
  if(q.kind==="number")return q.mode==="digits"?String(q.value):numWords(q.value);
- if(q.kind==="ordinal")return q.mode==="digits"?q.value+(["th","st","nd","rd"][q.value%10]||"th"):ordinal(q.value);
+ if(q.kind==="ordinal")return q.mode==="digits"?q.value+((q.value%100>=11&&q.value%100<=13)?"th":q.value%10===1?"st":q.value%10===2?"nd":q.value%10===3?"rd":"th"):ordinal(q.value);
  if(q.kind==="day"||q.kind==="month")return q.value;
  if(q.kind==="date")return q.mode==="digits"?hhmm(q.day,q.month)+"/"+q.year:months[q.month-1]+" "+ordinal(q.day);
  if(q.kind==="time")return q.mode==="digits"?hhmm(q.hour,q.minute):englishTime(q.hour,q.minute,"past");
@@ -122,7 +122,7 @@ function model(q){
 function cue(q){
  if(q.kind==="number")return q.mode==="digits"?numWords(q.value):q.value.toLocaleString("en-US");
  if(q.kind==="ordinal")return q.mode==="digits"?ordinal(q.value):q.value+((q.value%10===1&&q.value!==11)?"st":(q.value%10===2&&q.value!==12)?"nd":(q.value%10===3&&q.value!==13)?"rd":"th");
- if(q.kind==="day"||q.kind==="month")return language==="vi"?({"Monday":"Thứ Hai","Tuesday":"Thứ Ba","Wednesday":"Thứ Tư","Thursday":"Thứ Năm","Friday":"Thứ Sáu","Saturday":"Thứ Bảy","Sunday":"Chủ Nhật","January":"Tháng Một","February":"Tháng Hai","March":"Tháng Ba","April":"Tháng Tư","May":"Tháng Năm","June":"Tháng Sáu","July":"Tháng Bảy","August":"Tháng Tám","September":"Tháng Chín","October":"Tháng Mười","November":"Tháng Mười Một","December":"Tháng Mười Hai"})[q.value]:q.value;
+ if(q.kind==="day"||q.kind==="month")return ({"Monday":"Thứ Hai","Tuesday":"Thứ Ba","Wednesday":"Thứ Tư","Thursday":"Thứ Năm","Friday":"Thứ Sáu","Saturday":"Thứ Bảy","Sunday":"Chủ Nhật","January":"Tháng Một","February":"Tháng Hai","March":"Tháng Ba","April":"Tháng Tư","May":"Tháng Năm","June":"Tháng Sáu","July":"Tháng Bảy","August":"Tháng Tám","September":"Tháng Chín","October":"Tháng Mười","November":"Tháng Mười Một","December":"Tháng Mười Hai"})[q.value];
  if(q.kind==="date")return q.mode==="digits"?months[q.month-1]+" "+ordinal(q.day)+", "+q.year:hhmm(q.day,q.month)+"/"+q.year;
  if(q.kind==="time")return q.mode==="digits"?englishTime(q.hour,q.minute,"past"):hhmm(q.hour,q.minute);
  if(q.kind==="money")return q.mode==="digits"?numWords(q.value)+" dong":fmtAmount(q.value);
