@@ -24,20 +24,34 @@ if(a===b)return 1;const x=a.split(" "),y=b.split(" ");const d=Array.from({length
 for(let i=1;i<=x.length;i++){let prev=d[0];d[0]=i;for(let j=1;j<=y.length;j++){const z=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,prev+(x[i-1]===y[j-1]?0:1));prev=z}}
 return 1-d[y.length]/Math.max(x.length,y.length,1)}
 function score(item,response){
-const target=canonical(item.model,item.dir),given=canonical(response,item.dir);
+const raw=clean(response),target=canonical(item.model,item.dir),given=canonical(response,item.dir);
 if(!given)return{status:"wrong",similarity:0,reason:"Write a translation before checking."};
-if(negativeSign(target,item.dir)!==negativeSign(given,item.dir))return{status:"wrong",similarity:0,reason:"Check the negative meaning. A negative and an affirmative sentence are not equivalent."};
-let sim=similarity(target,given);
-const tokensA=target.split(" "),tokensB=given.split(" ");
-const subj=tokensA.slice(0,3).filter(x=>["i","my","he","she","they","we","you","his","her","our","their"].includes(x));
-if(item.dir==="vi"&&subj.length&&subj[0]!==tokensB.find(x=>["i","my","he","she","they","we","you","his","her","our","their"].includes(x)))return{status:"review",similarity:sim,reason:"Check that the subject and person match the original."};
+const sim=similarity(target,given);
+if(negativeSign(target,item.dir)!==negativeSign(given,item.dir))
+ return{status:"wrong",similarity:sim,reason:"The affirmative/negative meaning has changed. Check not, don't, doesn't, and never."};
 if(item.dir==="vi"){
-const marker=/\b(am|is|are)\s+(not\s+)?\w+ing\b/.test(given);
-if(marker&&!/\b(am|is|are)\s+(not\s+)?\w+ing\b/.test(target))return{status:"review",similarity:sim,reason:"This session practises the Present Simple; check whether the action is habitual."};
-if(/\b(he|she|it|my sister|my brother)\s+(do|don't)\b/.test(given))return{status:"wrong",similarity:sim,reason:"Use does/doesn't with he, she or it."};
+ if(/\b(he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:don't|do not)\b/.test(raw))
+  return{status:"wrong",similarity:sim,reason:"Use doesn't/does not with he, she and it."};
+ if(/\b(i|you|we|they)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:doesn't|does not)\b/.test(raw))
+  return{status:"wrong",similarity:sim,reason:"Use don't/do not with I, you, we and they."};
+ if(/\b(?:he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:have|go|wake|get|eat|brush|study|do|watch|work|play|help|enjoy|feel|worry|prefer|exercise|visit|prepare|earn|finish|collect|read|like|support|understand|respect|believe|agree|spend|share|live)\b/.test(raw))
+  return{status:"wrong",similarity:sim,reason:"With he/she/it in Present Simple affirmative sentences, conjugate the verb: has, goes, wakes, studies, etc."};
+ if(/\b(?:he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:are|am)\b/.test(raw))
+  return{status:"wrong",similarity:sim,reason:"Use 'is' with he/she/it, not am/are."};
+ if(/\b(?:i)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:is|are)\b/.test(raw))
+  return{status:"wrong",similarity:sim,reason:"Use 'am' with I."};
+ const targetSub=/^(?:my|his|her|our|their|the)\s+\w+|^(?:i|you|we|they|he|she|it)\b/.exec(target);
+ const givenSub=/^(?:my|his|her|our|their|the)\s+\w+|^(?:i|you|we|they|he|she|it)\b/.exec(given);
+ if(targetSub&&givenSub&&targetSub[0]!==givenSub[0]){
+  const kin=(s)=>s.replace(/\b(older|elder|big)\b/g,"elder").replace(/\b(younger|little)\b/g,"little");
+  if(kin(targetSub[0])!==kin(givenSub[0]))return{status:"review",similarity:sim,reason:"Check that the subject and family relationship match the Vietnamese sentence."};
+ }
+ if(/\b(?:am|is|are)\s+(?:not\s+)?\w+ing\b/.test(given)&&!/\b(?:am|is|are)\s+(?:not\s+)?\w+ing\b/.test(target))
+  return{status:"review",similarity:sim,reason:"Check the tense: this lesson asks for a routine or general Present Simple meaning."};
 }
-const outcome=sim>=.90?"correct":sim>=.70?"review":"wrong";
-return{status:outcome,similarity:sim,reason:outcome==="correct"?"Your meaning and sentence structure match the reference.":outcome==="review"?"This may be another valid expression. Compare subject, time, meaning and verb form; this local checker cannot reliably judge every paraphrase.":"This differs significantly from the reference. Check the subject, verb, vocabulary and meaning."};
+if(target===given)return{status:"correct",similarity:1,reason:"Accepted: equivalent meaning, including recognized synonym phrases and contractions."};
+const outcome=sim>=.94?"correct":sim>=.68?"review":"wrong";
+return {status:outcome,similarity:sim,reason:outcome==="correct"?"Your meaning closely matches the reference; minor wording differences were accepted.":outcome==="review"?"Possible alternative phrasing. This offline checker cannot reliably assess all natural paraphrases, so compare the meaning and grammar with the reference.":"The answer differs significantly from the reference. Compare the subject, tense, verb and meaning."};
 }
 function formulaFor(item){
 const m=item.model.toLowerCase();if(item.dir==="en")return "Present Simple: S + V(s/es) | S + am/is/are | Do/Does + S + V₀?";
