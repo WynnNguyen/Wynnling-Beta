@@ -78,6 +78,8 @@ const guides=[
  ["10,000 = ten thousand (mười nghìn).","10.000 = ten thousand (mười nghìn)."],
  ["100,000 = one hundred thousand (một trăm nghìn).","100.000 = one hundred thousand (một trăm nghìn)."],
  ["1,000,000 = one million (một triệu).","1.000.000 = one million (một triệu)."],
+ ["10,000,000 = ten million; 100,000,000 = one hundred million.","10.000.000 = ten million; 100.000.000 = one hundred million."],
+ ["1,000,000,000 = one billion (một tỷ).","1.000.000.000 = one billion (một tỷ)."],
  ["Read groups of three from left to right: 325,000 = three hundred and twenty-five thousand.","Đọc các nhóm ba chữ số từ trái sang phải: 325.000 = three hundred and twenty-five thousand."],
  ["Add dong to the complete price: 25,500 ₫ = twenty-five thousand five hundred dong.","Thêm dong ở cuối số tiền: 25.500 ₫ = twenty-five thousand five hundred dong."],
  ["How much is it? → It costs ... dong.","How much is it? → It costs ... dong."]
