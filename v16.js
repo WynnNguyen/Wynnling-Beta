@@ -10,7 +10,16 @@ function saveWordReviews(){localStorage.setItem(reviewStorageKey,JSON.stringify(
 function recordWordReview(u,s,i,correct,assisted=false){const id=wordReviewId(u,s,i),old=wordReviews[id]||{streak:0};const streak=correct&&!assisted?(old.streak||0)+1:0;const days=!correct?0:assisted?1:streak>=3?7:3;wordReviews[id]={streak,due:Date.now()+days*dayMs,lastCorrect:!!correct,attempts:(old.attempts||0)+1};saveWordReviews()}
 function dueWords(){return Object.entries(wordReviews).filter(([,v])=>v.due<=Date.now()).map(([key,value])=>{const [ui,si,wi]=key.split('-').map(Number);return {ui,si,wi,value,word:units[ui]?.sessions[si]?.words[wi]}}).filter(x=>x.word)}
 function normalizedTranslation(text,dir){let value=normalize(String(text)).replace(/\s+/g,' ').trim();if(dir==='vi')value=value.replace(/\beat breakfast\b/g,'have breakfast').replace(/\beating breakfast\b/g,'having breakfast').replace(/\bdad\b/g,'father').replace(/\bmom\b/g,'mother').replace(/\bevery single day\b/g,'every day').replace(/\bdaily\b/g,'every day');else value=value.replace(/\bba\b/g,'bố').replace(/\bmá\b/g,'mẹ').replace(/\bhằng ngày\b/g,'mỗi ngày').replace(/\bbuổi tối\b/g,'tối');return value}
-function translationAccepted(question,response){const first=normalizedTranslation(response,question.dir);return question.answers.some(model=>normalizedTranslation(model,question.dir)===first)}
+function translationAccepted(question,response){
+ if(window.WynnlingV21){
+   const u=units[unit];
+   const checked=window.WynnlingV21.grade({...question,rubric:{targetTense:u.id==='continuous'?'present-continuous':u.id==='future'?'future-simple':'present-simple'}},response,language);
+   window.WynnlingV21.lastLegacyGrade=checked;
+   return checked.status==='correct';
+ }
+ const first=normalizedTranslation(response,question.dir);
+ return question.answers.some(model=>normalizedTranslation(model,question.dir)===first);
+}
 const oldShell16=shell;
 shell=function(content){oldShell16(content);document.querySelectorAll('main h1,main h2,main h3,.hero .orb,.tense-emoji,.topic-icon,.emoji').forEach(el=>{if(el.matches('.orb,.tense-emoji,.topic-icon,.emoji')){el.remove();return}for(const node of [...el.childNodes])if(node.nodeType===3)node.textContent=node.textContent.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').replace(/\s{2,}/g,' ').trim()})};
 function sessionMastery(ui,si){const u=units[ui],s=u.sessions[si],key=`${ui}-${si}`,record=vocabProgress[key]||{},done=!!history[key]?.complete,quiz=record.quizBest||0,types=sessionFocus[u.id][si],scores=types.map(type=>grammarProgress[`${u.id}-${type}`]??-1),grammarPass=scores.every(score=>score>=4),ready=done&&quiz>=8&&grammarPass;return {done,quiz,scores,grammarPass,ready,words:record.seen?.length||0,total:s.words.length}}
