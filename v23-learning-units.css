@@ -1,0 +1,14 @@
+/* Wynnling v23 — mobile-first Unit Library and clear teaching instructions */
+.v23-directory{padding:12px 0 28px}.v23-directory .eyebrow{margin-bottom:8px}.v23-directory h1{font-size:clamp(30px,4.4vw,46px);margin:5px 0 7px}.v23-intro{color:#627e9c;font-size:15px;line-height:1.6;margin:0 0 22px}
+.v23-unit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.v23-unit-card{text-align:left;display:flex;flex-direction:column;min-width:0;border:1px solid #d7e4f8;border-radius:20px;background:linear-gradient(135deg,#fff 0%,#f4f8ff 100%);padding:24px;box-shadow:0 7px 22px rgba(37,70,132,.05);font:inherit;color:#244369;cursor:pointer;min-height:220px;transition:border-color .15s,transform .15s,box-shadow .15s}
+.v23-unit-card:hover,.v23-unit-card:focus-visible{border-color:#86abe9;box-shadow:0 12px 27px rgba(37,70,132,.11);transform:translateY(-2px)}
+.v23-unit-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:19px}.v23-unit-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:#e8f0ff;font-size:27px}.v23-unit-badge{background:#dceafe;border-radius:20px;padding:7px 10px;font-size:11px;font-weight:800;letter-spacing:.12em;color:#3f67a1}
+.v23-unit-card h2{font-size:clamp(19px,2.5vw,25px);line-height:1.25;margin:0 0 6px;color:#203e69}.v23-unit-vn{font-size:14px;color:#6580a7;margin:0 0 22px}
+.v23-unit-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;border-top:1px solid #e1eafa;padding-top:13px;font-size:12px;color:#6581a2}.v23-unit-arrow{font-size:24px;font-weight:800;color:#426da9}
+.v23-back{display:inline-flex;margin:2px 0 22px;align-items:center;max-width:100%;white-space:normal}
+.v23-instructions{margin:0 0 20px;background:#f6f9ff;border:1px solid #d7e5fa;border-radius:14px;padding:18px}
+.v23-instruction-heading{display:flex;gap:13px;align-items:center;margin-bottom:15px}.v23-instruction-mark{width:43px;height:43px;background:#e3edff;border-radius:12px;display:grid;place-items:center;font-size:21px;flex-shrink:0}.v23-instruction-heading small{font-size:10px;font-weight:800;letter-spacing:.13em;color:#5680b5}.v23-instruction-heading h2{font-size:19px;margin:3px 0 0;color:#2b5281;line-height:1.35}
+.v23-rule-list{display:grid;gap:8px}.v23-rule{display:flex;align-items:flex-start;gap:11px;font-size:13.5px;line-height:1.5;color:#365578;background:#fff;border:1px solid #e0ebfa;border-radius:9px;padding:10px 12px}.v23-rule-n{font-size:11px;font-weight:800;color:#6487bb;flex-shrink:0;margin-top:2px}
+.v23-task-tip{font-size:13px;line-height:1.65;background:#e7f0ff;border-left:3px solid #5b81c1;color:#2f5281;padding:12px 14px;margin-top:15px;border-radius:6px}
+@media(max-width:720px){.v23-unit-grid{grid-template-columns:1fr;gap:12px}.v23-unit-card{min-height:170px;padding:19px 20px}.v23-unit-top{margin-bottom:13px}.v23-unit-vn{margin-bottom:13px}.v23-directory{padding-top:2px}}
