@@ -130,9 +130,45 @@ function psHub(){
  shellPS(`<div class="eyebrow">${psT("heading")} · ${psT("session")} ${i+1} / 6</div><h1>${esc(psSessionName(p))}</h1><p>${psT("study")} ${psT("saved")}</p>
  ${window.wynnlingVoiceUI()}<div class="card"><div class="row"><b>${psT("bank")}</b><span class="tag">${p.words.length} ${psT("words")}</span></div>
  ${["n","v","adj","adv","phr"].map(pos=>{const entries=p.words.filter(w=>w[2]===pos);return entries.length?`<div class="vocab-category"><h3>${psT(pos)}</h3><div class="vocab-table">${entries.map(w=>`<div class="vocab-entry"><div><strong>${esc(w[0])}</strong><br>${esc(w[1])}</div><button class="btn secondary small" aria-label="Listen: ${esc(w[0])}" onclick="window.psSpeak(${JSON.stringify(w[0]).replace(/"/g,"&quot;")})">🔊</button></div>`).join("")}</div></div>`:""}).join("")}</div>
- <div class="unit-grid" style="margin-top:16px"><div class="card"><h3>${psT("grammar")}</h3><p>${psT("gSubtitle")}</p><button class="btn" onclick="window.psGrammarStart(${i})">${psT("gBtn")}</button></div><div class="card"><h3>${psT("translation")}</h3><p>${psT("tSubtitle")}</p><button class="btn" onclick="window.psTranslateStart(${i})">${psT("tBtn")}</button></div></div>
+ <div class="unit-grid" style="margin-top:16px"><div class="card"><h3>${language==="vi"?"Kiểm tra từ vựng":"Vocabulary check"}</h3><p>${language==="vi"?"10 câu · Chọn nghĩa và viết từ tiếng Anh · kiểm tra và làm lại":"10 questions · choose meanings and write English · check and retry"}</p><button class="btn" onclick="window.psVocabStart(${i})">${language==="vi"?"Kiểm tra từ":"Check vocabulary"} →</button></div><div class="card"><h3>${psT("grammar")}</h3><p>${psT("gSubtitle")}</p><button class="btn" onclick="window.psGrammarStart(${i})">${psT("gBtn")}</button></div><div class="card"><h3>${psT("translation")}</h3><p>${psT("tSubtitle")}</p><button class="btn" onclick="window.psTranslateStart(${i})">${psT("tBtn")}</button></div></div>
  <div style="margin-top:17px"><button class="btn outline" onclick="navigate('curriculum')">${psT("backAll")}</button></div>`);
 }
+const vocabCheckState={session:0,items:[],index:0,answer:"",checked:false,correct:false,score:0,attempts:0};
+function vocabCheckStart(i){
+ const p=ps[i];if(!p)return;
+ const items=p.words.map((w,j)=>({english:w[0],vietnamese:w[1],pos:w[2],id:j}));
+ for(let k=items.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[items[k],items[j]]=[items[j],items[k]]}
+ vocabCheckState.session=i;vocabCheckState.items=items.slice(0,Math.min(10,items.length));vocabCheckState.index=0;vocabCheckState.answer="";vocabCheckState.checked=false;vocabCheckState.correct=false;vocabCheckState.score=0;vocabCheckState.attempts=0;view="psVocabCheck";psVocabCheck();
+}
+function vocabCheckNormalize(s){return String(s).toLowerCase().normalize("NFC").replace(/[.,!?;:’‘'"]/g,"").replace(/\s+/g," ").trim()}
+function vocabCheckCurrent(){return vocabCheckState.items[vocabCheckState.index]}
+function psVocabCheck(){
+ const st=vocabCheckState,i=st.index,total=st.items.length,p=ps[st.session],vi=language==="vi";
+ if(i>=total){
+  shellPS('<button class="btn outline small" onclick="window.psOpen('+st.session+')">← '+(vi?"Về buổi học":"Back to session")+'</button><div class="card"><h1>'+(vi?"Kết quả kiểm tra từ vựng":"Vocabulary Check Results")+'</h1><h2>'+st.score+' / '+total+'</h2><p>'+(vi?"Điểm chỉ tính câu trả lời đúng ngay lần đầu.":"Only correct first attempts count toward your score.")+'</p><button class="btn" onclick="window.psVocabStart('+st.session+')">'+(vi?"Làm bộ câu hỏi mới":"Try a new set")+' →</button></div>');return;
+ }
+ const w=vocabCheckCurrent(),reverse=i%2===1,required=reverse?w.english:w.vietnamese;
+ const choices=reverse?[]:[w,...p.words.filter(x=>x[0]!==w.english).map((x,j)=>({english:x[0],vietnamese:x[1],pos:x[2],id:j+100})).filter(x=>x.pos===w.pos).slice(0,3)];
+ if(!reverse&&choices.length<4){for(const x of p.words){if(choices.length===4)break;if(!choices.some(y=>y.vietnamese===x[1]))choices.push({english:x[0],vietnamese:x[1],pos:x[2]})}}
+ // Choice order is stable while answering this question but changes for each question.
+ if(!reverse)choices.sort((a,b)=>((a.english.length*13+a.vietnamese.length*7+i*17)%29)-((b.english.length*13+b.vietnamese.length*7+i*17)%29));
+ const prompt=reverse?(vi?"Viết từ hoặc cụm từ tiếng Anh:":"Write the English word or phrase:"):(vi?"Chọn nghĩa tiếng Việt đúng:":"Choose the correct Vietnamese meaning:");
+ const chosen=st.answer,feedback=st.checked?'<div class="feedback '+(st.correct?"":"review")+'"><strong>'+(st.correct?(vi?"Chính xác!":"Correct!"):(vi?"Chưa đúng":"Not quite"))+'</strong><p>'+(vi?"Đáp án":"Answer")+': <b>'+esc(w.english)+' — '+esc(w.vietnamese)+'</b></p><p>'+(vi?"Hãy nhớ từ này trước khi tiếp tục.":"Review this word before continuing.")+'</p></div>':"";
+ const controls=reverse?'<input class="short-answer" style="max-width:100%" autocomplete="off" value="'+esc(chosen)+'" '+(st.checked?"disabled":"")+' oninput="window.psVocabInput(this.value)" placeholder="'+(vi?"Nhập tiếng Anh":"Type in English")+'">': '<div class="vocab-check-choices">'+choices.map(x=>'<button type="button" class="btn '+(chosen===x.vietnamese?"":"outline")+'" '+(st.checked?"disabled":"")+' onclick="window.psVocabInput('+JSON.stringify(x.vietnamese).replace(/"/g,"&quot;")+')">'+esc(x.vietnamese)+'</button>').join("")+'</div>';
+ shellPS('<button class="btn outline small" onclick="window.psOpen('+st.session+')">← '+(vi?"Về buổi học":"Back to session")+'</button><h1>'+(vi?"Kiểm tra từ vựng":"Vocabulary Check")+' · '+esc(psSessionName(p))+'</h1><p>'+(i+1)+' / '+total+' · '+(vi?"Điểm":"Score")+': '+st.score+'</p><div class="card"><p><b>'+prompt+'</b></p><h2>'+esc(reverse?w.vietnamese:w.english)+'</h2>'+controls+'<div class="check-next-row"><button class="btn" '+(st.checked?"disabled":"")+' onclick="window.psVocabCheck()">'+(vi?"Kiểm tra":"Check")+'</button>'+(st.checked?'<button class="btn secondary" onclick="window.psVocabNext()">'+(i===total-1?(vi?"Hoàn thành":"Finish"):(vi?"Câu tiếp theo":"Next"))+' →</button>':"")+'</div>'+feedback+'</div>');
+}
+function vocabCheckAnswer(){
+ const st=vocabCheckState,w=vocabCheckCurrent();if(!w||!st.answer.trim()||st.checked)return;
+ const required=st.index%2===1?w.english:w.vietnamese;
+ st.correct=vocabCheckNormalize(st.answer)===vocabCheckNormalize(required);st.checked=true;st.attempts++;
+ if(st.correct&&st.attempts===1)st.score++;psVocabCheck();
+}
+function vocabCheckNext(){
+ const st=vocabCheckState;if(!st.checked)return;
+ if(!st.correct){st.checked=false;st.answer="";st.attempts++;psVocabCheck();return}
+ st.index++;st.answer="";st.checked=false;st.correct=false;st.attempts=0;psVocabCheck();
+}
+window.psVocabStart=vocabCheckStart;window.psVocabInput=x=>{vocabCheckState.answer=x};window.psVocabCheck=vocabCheckAnswer;window.psVocabNext=vocabCheckNext;
 function grammarStart(i){grammarState.session=i;grammarState.index=0;grammarState.attempt="";grammarState.checked=false;grammarState.tries=0;view="psGrammar";psGrammar()}
 function normalGrammar(s){return clean(s).replace(/\bdoesn't\b/g,"does not").replace(/\bdon't\b/g,"do not").replace(/\bisn't\b/g,"is not").replace(/\baren't\b/g,"are not").replace(/\bi'm\b/g,"i am")}
 function checkGrammar(){const item=ps[grammarState.session].grammar[grammarState.index],ans=normalGrammar(item.answer),got=normalGrammar(grammarState.attempt);if(!got){alert(psT("empty"));return;}grammarState.checked=true;grammarState.status=ans===got?"correct":"wrong";persist(item.id,{last:grammarState.status,tries:(psHistory[item.id]?.tries||0)+1});psGrammar()}
@@ -201,7 +237,7 @@ function psSyncCurriculumLanguage(){
   session.focus=language==="vi"?"Từ vựng · 15 câu ngữ pháp · 15 câu dịch":"Vocabulary · 15 grammar drills · 15 translations";
  });
 }
-const oldRender=render;render=function(){psSyncCurriculumLanguage();if(view==="psHub")return psHub();if(view==="psGrammar")return psGrammar();if(view==="psTranslation")return psTranslation();return oldRender()};
+const oldRender=render;render=function(){psSyncCurriculumLanguage();if(view==="psHub")return psHub();if(view==="psVocabCheck")return psVocabCheck();if(view==="psGrammar")return psGrammar();if(view==="psTranslation")return psTranslation();return oldRender()};
 const oldGo=goSession;goSession=function(ui,si){if(ui===0)return openPS(si);return oldGo(ui,si)};
 const oldStart=start;start=function(ui,si,kind){if(ui===0)return translationStart(si,kind==="test"?"cumulative":"session");return oldStart(ui,si,kind)};
 const oldCurriculum=curriculum;curriculum=function(){oldCurriculum();if(unit!==0)return;const btn=[...document.querySelectorAll("button")].find(b=>b.getAttribute("onclick")==="start(0,0,'test')");if(btn){btn.textContent=psT("cumulative")+" (30) →";const info=btn.closest(".session-lesson")?.querySelector("p");if(info)info.textContent=language==="vi"?"30 câu tổng hợp riêng từ 6 chủ đề đã học.":"30 mixed questions from the six completed topics."}};
