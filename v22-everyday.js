@@ -58,6 +58,7 @@ function numericAnswer(q,entered){
    return h===q.hour||(q.allow12&&!x[3]&&h===(q.hour%12||12));
   }
   const modelSet=[englishTime(q.hour,q.minute),englishTime(q.hour,q.minute,"past")];
+  if(q.minute===15||q.minute===45)modelSet.push("a "+englishTime(q.hour,q.minute,"past"));
   const x=normalWords(raw).replace(/^it s /,"").replace(/^it's /,"");
   return modelSet.some(m=>normalWords(m)===x);
  }
