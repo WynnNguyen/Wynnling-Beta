@@ -45,7 +45,7 @@ function numericAnswer(q,entered){
  if(q.kind==="ordinal")return q.mode==="digits"?new RegExp("^"+q.value+"(?:st|nd|rd|th)?$","i").test(raw):normalWords(raw)===normalWords(ordinal(q.value));
  if(q.kind==="day"||q.kind==="month")return strip(raw)===strip(q.value);
  if(q.kind==="date"){
-  if(q.mode==="words")return [q.model,months[q.month-1]+" "+ordinal(q.day),ordinal(q.day)+" "+months[q.month-1],months[q.month-1]+" "+q.day, q.day+" "+months[q.month-1]].some(x=>normalWords(x)===normalWords(raw));
+  if(q.mode==="words")return [months[q.month-1]+" "+ordinal(q.day),ordinal(q.day)+" "+months[q.month-1],months[q.month-1]+" "+q.day,q.day+" "+months[q.month-1]].some(x=>normalWords(x)===normalWords(raw));
   const p=raw.replace(/\s/g,"").match(/^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{4}))?$/);
   return !!p&&+p[1]===q.day&&+p[2]===q.month&&(!p[3]||+p[3]===q.year);
  }
@@ -71,56 +71,6 @@ const sessionData=[
 {key:"money",title:"Money & Prices",vn:"Tiền và giá cả",intro:"Learn place values first: hundred, thousand, ten thousand, hundred thousand, million.",vnIntro:"Học các hàng số trước: trăm, nghìn, chục nghìn, trăm nghìn, triệu.",samples:[["100 ₫","one hundred dong"],["1,000 ₫","one thousand dong"],["10,000 ₫","ten thousand dong"],["100,000 ₫","one hundred thousand dong"],["1,000,000 ₫","one million dong"],["10,000,000 ₫","ten million dong"],["100,000,000 ₫","one hundred million dong"],["1,000,000,000 ₫","one billion dong"]],words:[["price","giá","n"],["discount","giảm giá","n"],["change","tiền thối","n"],["cash","tiền mặt","n"],["buy","mua","v"],["sell","bán","v"],["pay","trả tiền","v"],["cheap","rẻ","adj"],["expensive","đắt","adj"]]},
 {key:"mix",title:"Mixed Practice",vn:"Luyện tập tổng hợp",intro:"Appointments, schedules, birthdays and shopping.",vnIntro:"Cuộc hẹn, lịch trình, sinh nhật và mua sắm.",samples:[["Appointment","Thursday, November nineteenth · 3:30 p.m."],["Shopping","Three hundred and twenty-five thousand dong"],["Class schedule","Monday · 8:45 a.m."],["Birthday","June twenty-first"]],words:[["appointment","cuộc hẹn","n"],["schedule","lịch trình","n"],["meeting","cuộc họp","n"],["ticket","vé","n"],["birthday","sinh nhật","n"],["shopping","việc mua sắm","n"],["start","bắt đầu","v"],["cost","có giá","v"]]}
 ];
-const numberValues=[7,13,18,25,37,40,56,73,99,105,116,204,308,416,580,672,806,999,1005,1250,2026,3048,5070,12600,25080,100500,325000,1000000,1250000,2400500];
-const dayRows=[...days,...days,...days,...days,...days].slice(0,30);
-const dateSamples=[[17,11],[21,7],[3,4],[15,2],[1,1],[30,6],[12,8],[23,9],[5,12],[19,11],[14,3],[27,5],[31,10],[9,1],[25,12]];
-const timeSamples=[[7,0],[7,5],[7,15],[7,30],[7,45],[7,50],[8,20],[9,30],[10,10],[11,55],[12,0],[12,30],[13,15],[14,45],[15,30],[16,5],[17,40],[18,0],[19,25],[20,50],[21,15],[22,30],[23,45],[0,0],[6,10],[6,55],[8,45],[9,5],[10,30],[16,50]];
-const prices=[100,1000,10000,100000,1000000,10000000,100000000,1000000000,5000,12000,25500,105000,1250000,80000,325000,15000,39000,120500,7500,999000,205000,99000,127000,1500000,35000,190000,420000,50600,4500,675000];
-function makeQuestions(i){
- let out=[];
- if(i===0)out=numberValues.map((n,j)=>({kind:j%5===0?"ordinal":"number",value:j%5===0?1+j%31:n,mode:j%2?"words":"digits"}));
- if(i===1){const extraDates=[[2,1],[10,2],[6,3],[20,4],[28,7]];const dates=[...dateSamples,...extraDates];out=[...days.slice(0,5).map(value=>({kind:"day",value,mode:"words"})),...[0,2,4,6,9].map(j=>({kind:"month",value:months[j],mode:"words"})),...dates.map(([day,month],j)=>({kind:"date",day,month,year:2026,mode:j%2?"words":"digits"}))];}
- if(i===2)out=timeSamples.map(([h,m],j)=>({kind:"time",hour:h,minute:m,mode:j%3===0?"words":"digits",allow12:false}));
- if(i===3)out=prices.map((v,j)=>({kind:"money",value:v,mode:j%2?"words":"digits"}));
- if(i===4){const b=[...makeQuestions(0).slice(0,6),...makeQuestions(1).slice(0,8),...makeQuestions(2).slice(0,8),...makeQuestions(3).slice(0,8)];out=b.map((q,j)=>({...q,scenario:["appointment","class timetable","birthday","shopping"][j%4]}))}
- return out.map((q,j)=>({...q,id:"U4-S"+(i+1)+"-Q"+String(j+1).padStart(2,"0"),session:i}));
-}
-const banks=sessionData.map((_,i)=>makeQuestions(i));
-// Listening has its own question bank: no writing question is recycled as audio.
-const listeningSamples={
-  numbers:[42,69,84,117,245,390,705,1408,3620,20500],
-  ordinals:[4,6,7,10,11,13,14,15,20,22],
-  dates:[[4,2],[8,3],[16,4],[22,5],[6,7],[18,8],[24,9],[11,10],[26,11],[2,12]],
-  times:[[6,20],[8,10],[9,40],[10,25],[11,15],[12,45],[14,10],[15,55],[18,35],[21,5]],
-  prices:[200,2500,8500,17500,46000,63500,88000,146000,275000,805000]
-};
-function makeListeningQuestions(i){
- let out=[];
- if(i===0)out=listeningSamples.numbers.map((n,j)=>({kind:j%4===3?"ordinal":"number",value:j%4===3?listeningSamples.ordinals[j]:n,mode:"digits"}));
- if(i===1)out=[
-  {kind:"day",value:"Saturday"},{kind:"month",value:"February"},
-  {kind:"date",day:4,month:2,year:2026},{kind:"day",value:"Sunday"},
-  {kind:"month",value:"September"},{kind:"date",day:18,month:8,year:2026},
-  {kind:"date",day:22,month:5,year:2026},{kind:"date",day:26,month:11,year:2026},
-  {kind:"month",value:"December"},{kind:"date",day:2,month:12,year:2026}
- ];
- if(i===2)out=listeningSamples.times.map(([h,m])=>({kind:"time",hour:h,minute:m,mode:"digits",allow12:false}));
- if(i===3)out=listeningSamples.prices.map(value=>({kind:"money",value,mode:"digits"}));
- if(i===4)out=[
-  {kind:"number",value:84,mode:"digits"},
-  {kind:"day",value:"Saturday"},
-  {kind:"time",hour:6,minute:20,mode:"digits",allow12:false},
-  {kind:"money",value:17500,mode:"digits"},
-  {kind:"date",day:16,month:4,year:2026,mode:"digits"},
-  {kind:"ordinal",value:14,mode:"digits"},
-  {kind:"time",hour:18,minute:35,mode:"digits",allow12:false},
-  {kind:"month",value:"September"},
-  {kind:"money",value:275000,mode:"digits"},
-  {kind:"date",day:26,month:11,year:2026,mode:"digits"}
- ];
- return out.map((q,j)=>({...q,id:"U4-L"+(i+1)+"-Q"+String(j+1).padStart(2,"0"),session:i,mode:q.mode||"words"}));
-}
-const listeningBanks=sessionData.map((_,i)=>makeListeningQuestions(i));
 function shuffleQuestions(items){
  const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;
 }
@@ -133,7 +83,7 @@ function freshQuestions(si,mode,count){
  const number=()=>Math.random()<.22?{kind:"ordinal",value:rand(1,31),mode:Math.random()<.5?"words":"digits"}:{kind:"number",value:[rand(0,99),rand(100,999),rand(1000,9999),rand(10000,999999),rand(1000000,9999999)][rand(0,4)],mode:Math.random()<.5?"words":"digits"};
  const calendar=()=>{const x=rand(0,9);return x<2?{kind:"day",value:days[rand(0,6)],mode:"words"}:x<4?{kind:"month",value:months[rand(0,11)],mode:"words"}:date()};
  const time=()=>({kind:"time",hour:rand(0,23),minute:rand(0,11)*5,mode:Math.random()<.5?"words":"digits",allow12:false});
- const money=()=>({kind:"money",value:rand(1,9999)*100,mode:Math.random()<.5?"words":"digits"});
+ const money=()=>{const band=rand(0,5),value=band===0?rand(1,99)*100:band===1?rand(1,999)*1000:band===2?rand(1,999)*10000:band===3?rand(1,999)*100000:band===4?rand(1,999)*1000000:rand(1,99)*100000000;return {kind:"money",value,mode:Math.random()<.5?"words":"digits"}};
  const makers=[number,calendar,time,money];
  for(let attempts=0;out.length<count&&attempts<count*100;attempts++){
   let q=si===4?makers[attempts%4]():makers[si]();
@@ -193,7 +143,7 @@ function cue(q){
 }
 function audioText(q){
  if(q.kind==="date")return months[q.month-1]+" "+ordinal(q.day)+" twenty twenty-six";
- if(q.kind==="time")return englishTime(q.hour,q.minute,"past");
+ if(q.kind==="time")return englishTime(q.hour,q.minute,"past")+(q.hour<12?" a.m.":" p.m.");
  if(q.kind==="money")return numWords(q.value)+" dong";
  if(q.kind==="ordinal")return ordinal(q.value);
  if(q.kind==="number")return numWords(q.value);
@@ -223,5 +173,5 @@ const priorStart=start;start=function(ui,si,mode){if(ui===uiIndex){open(si);retu
 const priorCurriculum=curriculum;curriculum=function(){if(unit!==uiIndex)return priorCurriculum();const p=progress();shell('<div class="eyebrow">'+tr("unit")+' · A1–A2</div><h1>'+tr("name")+'</h1><p class="v22-vn">'+tr("sub")+'</p><p>'+tr("intro")+'</p><div class="v22-unit-list">'+sessionData.map((s,i)=>'<div class="card v22-unit-row"><div class="num">'+(i+1)+'</div><div class="v22-unit-info"><h3>'+d(s.title)+'</h3><p class="v22-vn">'+d(s.vn)+'</p><small>30 '+tr("practice")+' · 10 '+tr("listen")+' · '+(i===4?20:10)+' '+tr("test")+'</small></div><span class="tag">'+(p["assessment-"+i]===undefined?"—":p["assessment-"+i]+"/"+(i===4?20:10))+'</span><button class="btn small" onclick="v22Open('+i+')">'+tr("go")+' →</button></div>').join("")+'</div><p class="note">'+tr("note")+'</p>')};
 const priorRender=render;render=function(){if(view==="v22Hub")return hub();if(view==="v22Question")return question();return priorRender()};
 const priorHome=home;home=function(){priorHome();const main=document.querySelector("main");if(main){const count=main.querySelector(".overview-top .tag");if(count)count.title="Unit 04 includes a separate numerical assessment"}};
-window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,banks,sessionData,uiIndex,freshQuestions};
+window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,sessionData,uiIndex,freshQuestions};
 })();
