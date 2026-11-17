@@ -46,7 +46,8 @@ function updateStickers(){
  document.querySelectorAll(".topic-card").forEach((card,i)=>{
   const title=subjects[i]?.name||card.querySelector("b")?.textContent||"";
   const icon=sticker(title,unitIcon(units.find(u=>u.sessions.includes(subjects[i]))||{}));
-  const existing=card.querySelector(".vocab-sticker,.v24-topic-icon");
+  const stickers=card.querySelectorAll(".vocab-sticker,.v24-topic-icon");
+  const existing=stickers[0];stickers.forEach((badge,i)=>{if(i>0)badge.remove()});
   if(existing){existing.textContent=icon;existing.classList.add("v24-topic-icon")}
   else {const badge=document.createElement("span");badge.className="v24-topic-icon";badge.textContent=icon;badge.setAttribute("aria-hidden","true");card.prepend(badge)}
  });
