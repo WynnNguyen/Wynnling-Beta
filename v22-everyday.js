@@ -77,7 +77,7 @@ const prices=[5000,12000,25500,105000,1250000,80000,325000,15000,39000,120500,75
 function makeQuestions(i){
  let out=[];
  if(i===0)out=numberValues.map((n,j)=>({kind:j%5===0?"ordinal":"number",value:j%5===0?1+j%31:n,mode:j%2?"words":"digits"}));
- if(i===1)out=Array.from({length:30},(_,j)=>j%3===0?{kind:"day",value:days[j%7],mode:"words"}:j%3===1?{kind:"month",value:months[(j*3)%12],mode:"words"}:(()=>{const [d,m]=dateSamples[j%dateSamples.length];return {kind:"date",day:d,month:m,year:2026,mode:j%2?"words":"digits"}})());
+ if(i===1)out=Array.from({length:30},(_,j)=>j%3===0?{kind:"day",value:days[j%7],mode:"words"}:j%3===1?{kind:"month",value:months[Math.floor(j/3)%12],mode:"words"}:(()=>{const [d,m]=dateSamples[j%dateSamples.length];return {kind:"date",day:d,month:m,year:2026,mode:j%2?"words":"digits"}})());
  if(i===2)out=timeSamples.map(([h,m],j)=>({kind:"time",hour:h,minute:m,mode:j%3===0?"words":"digits",allow12:false}));
  if(i===3)out=prices.map((v,j)=>({kind:"money",value:v,mode:j%2?"words":"digits"}));
  if(i===4){const b=[...makeQuestions(0).slice(0,6),...makeQuestions(1).slice(0,8),...makeQuestions(2).slice(0,8),...makeQuestions(3).slice(0,8)];out=b.map((q,j)=>({...q,scenario:["appointment","class timetable","birthday","shopping"][j%4]}))}
