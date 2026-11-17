@@ -8,11 +8,12 @@ const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 const small=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
 const tens=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
 function numWords(n){
- n=Number(n);if(!Number.isSafeInteger(n)||n<0||n>999999999)return"";
+ n=Number(n);if(!Number.isSafeInteger(n)||n<0||n>999999999999)return"";
  if(n<20)return small[n];if(n<100)return tens[Math.floor(n/10)]+(n%10?"-"+small[n%10]:"");
  if(n<1000)return small[Math.floor(n/100)]+" hundred"+(n%100?" and "+numWords(n%100):"");
  if(n<1e6)return numWords(Math.floor(n/1000))+" thousand"+(n%1000?(n%1000<100?" and ":" ")+numWords(n%1000):"");
- return numWords(Math.floor(n/1e6))+" million"+(n%1e6?" "+numWords(n%1e6):"");
+ if(n<1e9)return numWords(Math.floor(n/1e6))+" million"+(n%1e6?" "+numWords(n%1e6):"");
+ return numWords(Math.floor(n/1e9))+" billion"+(n%1e9?" "+numWords(n%1e9):"");
 }
 function ordinal(n){
  const irregular={1:"first",2:"second",3:"third",5:"fifth",8:"eighth",9:"ninth",12:"twelfth"};
@@ -66,14 +67,14 @@ const sessionData=[
 {key:"num",title:"Numbers & Ordinals",vn:"Số đếm và số thứ tự",intro:"Numbers from zero to millions, and first/second/third.",vnIntro:"Số từ 0 đến hàng triệu và cách đọc số thứ tự.",samples:[["13 / 30","thirteen / thirty"],["105","one hundred and five"],["1,250","one thousand two hundred and fifty"],["21st","twenty-first"]],words:[["number","con số","n"],["hundred","trăm","n"],["thousand","nghìn","n"],["million","triệu","n"],["ordinal","số thứ tự","n"],["first","thứ nhất","adj"],["second","thứ hai","adj"],["third","thứ ba","adj"]]},
 {key:"date",title:"Days, Months & Dates",vn:"Thứ, tháng và ngày",intro:"Weekdays, months, ordinal dates, and years.",vnIntro:"Thứ trong tuần, tháng, ngày và năm.",samples:[["Monday","Thứ Hai"],["November 17","November seventeenth"],["17/11/2026","17 November 2026 (day/month/year)"],["2026","twenty twenty-six"]],words:[["weekday","ngày trong tuần","n"],["month","tháng","n"],["date","ngày tháng","n"],["year","năm","n"],["birthday","sinh nhật","n"],["calendar","lịch","n"],["today","hôm nay","adv"],["tomorrow","ngày mai","adv"]]},
 {key:"time",title:"Telling Time",vn:"Cách đọc giờ",intro:"Read digital times as hour + minutes first (7:20 = seven twenty), then learn past/to alternatives.",vnIntro:"Đọc kiểu giờ + phút trước (7:20 = seven twenty), sau đó học cách đọc past/to.",samples:[["07:00","seven o'clock"],["07:05","seven oh five / five past seven"],["07:20","seven twenty / twenty past seven"],["07:30","seven thirty / half past seven"],["07:45","seven forty-five / quarter to eight"],["07:50","seven fifty / ten to eight"]],words:[["clock","đồng hồ","n"],["hour","giờ","n"],["minute","phút","n"],["morning","buổi sáng","n"],["afternoon","buổi chiều","n"],["evening","buổi tối","n"],["early","sớm","adv"],["late","muộn","adj"]]},
-{key:"money",title:"Money & Prices",vn:"Tiền và giá cả",intro:"Learn place values first: hundred, thousand, ten thousand, hundred thousand, million.",vnIntro:"Học các hàng số trước: trăm, nghìn, chục nghìn, trăm nghìn, triệu.",samples:[["100 ₫","one hundred dong"],["1,000 ₫","one thousand dong"],["10,000 ₫","ten thousand dong"],["100,000 ₫","one hundred thousand dong"],["1,000,000 ₫","one million dong"],["1,250,000 ₫","one million two hundred and fifty thousand dong"]],words:[["price","giá","n"],["discount","giảm giá","n"],["change","tiền thối","n"],["cash","tiền mặt","n"],["buy","mua","v"],["sell","bán","v"],["pay","trả tiền","v"],["cheap","rẻ","adj"],["expensive","đắt","adj"]]},
+{key:"money",title:"Money & Prices",vn:"Tiền và giá cả",intro:"Learn place values first: hundred, thousand, ten thousand, hundred thousand, million.",vnIntro:"Học các hàng số trước: trăm, nghìn, chục nghìn, trăm nghìn, triệu.",samples:[["100 ₫","one hundred dong"],["1,000 ₫","one thousand dong"],["10,000 ₫","ten thousand dong"],["100,000 ₫","one hundred thousand dong"],["1,000,000 ₫","one million dong"],["10,000,000 ₫","ten million dong"],["100,000,000 ₫","one hundred million dong"],["1,000,000,000 ₫","one billion dong"]],words:[["price","giá","n"],["discount","giảm giá","n"],["change","tiền thối","n"],["cash","tiền mặt","n"],["buy","mua","v"],["sell","bán","v"],["pay","trả tiền","v"],["cheap","rẻ","adj"],["expensive","đắt","adj"]]},
 {key:"mix",title:"Mixed Practice",vn:"Luyện tập tổng hợp",intro:"Appointments, schedules, birthdays and shopping.",vnIntro:"Cuộc hẹn, lịch trình, sinh nhật và mua sắm.",samples:[["Appointment","Thursday, November nineteenth · 3:30 p.m."],["Shopping","Three hundred and twenty-five thousand dong"],["Class schedule","Monday · 8:45 a.m."],["Birthday","June twenty-first"]],words:[["appointment","cuộc hẹn","n"],["schedule","lịch trình","n"],["meeting","cuộc họp","n"],["ticket","vé","n"],["birthday","sinh nhật","n"],["shopping","việc mua sắm","n"],["start","bắt đầu","v"],["cost","có giá","v"]]}
 ];
 const numberValues=[7,13,18,25,37,40,56,73,99,105,116,204,308,416,580,672,806,999,1005,1250,2026,3048,5070,12600,25080,100500,325000,1000000,1250000,2400500];
 const dayRows=[...days,...days,...days,...days,...days].slice(0,30);
 const dateSamples=[[17,11],[21,7],[3,4],[15,2],[1,1],[30,6],[12,8],[23,9],[5,12],[19,11],[14,3],[27,5],[31,10],[9,1],[25,12]];
 const timeSamples=[[7,0],[7,5],[7,15],[7,30],[7,45],[7,50],[8,20],[9,30],[10,10],[11,55],[12,0],[12,30],[13,15],[14,45],[15,30],[16,5],[17,40],[18,0],[19,25],[20,50],[21,15],[22,30],[23,45],[0,0],[6,10],[6,55],[8,45],[9,5],[10,30],[16,50]];
-const prices=[5000,12000,25500,105000,1250000,80000,325000,15000,39000,120500,7500,999000,10000,34500,1230,3920,205000,99000,127000,1500000,35000,190000,420000,50600,4500,75000,850000,250000,51000,675000];
+const prices=[100,1000,10000,100000,1000000,10000000,100000000,1000000000,5000,12000,25500,105000,1250000,80000,325000,15000,39000,120500,7500,999000,205000,99000,127000,1500000,35000,190000,420000,50600,4500,675000];
 function makeQuestions(i){
  let out=[];
  if(i===0)out=numberValues.map((n,j)=>({kind:j%5===0?"ordinal":"number",value:j%5===0?1+j%31:n,mode:j%2?"words":"digits"}));
