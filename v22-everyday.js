@@ -121,6 +121,31 @@ function makeListeningQuestions(i){
  return out.map((q,j)=>({...q,id:"U4-L"+(i+1)+"-Q"+String(j+1).padStart(2,"0"),session:i,mode:q.mode||"words"}));
 }
 const listeningBanks=sessionData.map((_,i)=>makeListeningQuestions(i));
+function shuffleQuestions(items){
+ const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;
+}
+const lastDeckSignatures=new Map(),recentBySession=new Map();
+function freshQuestions(si,mode,count){
+ const listen=mode==="listen",out=[],used=new Set(),previous=recentBySession.get(si)||new Set();
+ const add=q=>{const key=[q.kind,q.value,q.day,q.month,q.hour,q.minute].join("|");if(used.has(key)||previous.has(key))return;used.add(key);out.push({...q,mode:listen?(q.kind==="day"||q.kind==="month"?"words":"digits"):q.mode||"words",session:si})};
+ const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+ const date=()=>{const month=rand(1,12),maxDay=new Date(2026,month,0).getDate();return {kind:"date",day:rand(1,maxDay),month,year:2026,mode:Math.random()<.5?"words":"digits"}};
+ const number=()=>Math.random()<.22?{kind:"ordinal",value:rand(1,31),mode:Math.random()<.5?"words":"digits"}:{kind:"number",value:[rand(0,99),rand(100,999),rand(1000,9999),rand(10000,999999),rand(1000000,9999999)][rand(0,4)],mode:Math.random()<.5?"words":"digits"};
+ const calendar=()=>{const x=rand(0,9);return x<2?{kind:"day",value:days[rand(0,6)],mode:"words"}:x<4?{kind:"month",value:months[rand(0,11)],mode:"words"}:date()};
+ const time=()=>({kind:"time",hour:rand(0,23),minute:rand(0,11)*5,mode:Math.random()<.5?"words":"digits",allow12:false});
+ const money=()=>({kind:"money",value:rand(1,9999)*100,mode:Math.random()<.5?"words":"digits"});
+ const makers=[number,calendar,time,money];
+ for(let attempts=0;out.length<count&&attempts<count*100;attempts++){
+  let q=si===4?makers[attempts%4]():makers[si]();
+  add(q);
+ }
+ // Do not repeat an identical full attempt when users restart practice or listening.
+ const key=si+"-"+mode,signature=out.map(q=>[q.kind,q.value,q.day,q.month,q.hour,q.minute].join(":")).join(";");
+ if(lastDeckSignatures.get(key)===signature&&out.length>1)out.reverse();
+ lastDeckSignatures.set(key,signature);recentBySession.set(si,used);
+ return shuffleQuestions(out).map((q,j)=>({...q,id:"U4-"+mode+"-S"+(si+1)+"-Q"+String(j+1).padStart(2,"0")}));
+}
+
 
 const unit4={id:"everyday",name:"Numbers, Dates & Time",sub:"Số đếm, ngày tháng và giờ giấc",emoji:"🔢",level:"A1–A2",sessions:sessionData.map((s,i)=>({name:s.title,focus:s.vn,words:s.words,formula:"Reading, listening & numerical comprehension",v3vn:[],v3en:[],questions:[]}))};
 units.push(unit4);
@@ -185,9 +210,8 @@ function question(){
 function completed(){saveScore();const total=state.deck.length;show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><div class="card"><h1>'+tr("result")+'</h1><div class="v22-big-score">'+state.score+' / '+total+'</div><p>'+tr("score")+'</p><div class="actions"><button class="btn" onclick="v22Begin(\''+state.mode+'\')">'+tr("again")+'</button><button class="btn secondary" onclick="v22Hub()">'+tr("back")+'</button></div></div>')}
 function begin(mode){
  state.mode=mode;state.index=0;state.input="";state.answered=false;state.correct=false;state.score=0;
- let questions=[...banks[state.session]];
- if(mode==="listen")questions=[...listeningBanks[state.session]];
- if(mode==="assessment")questions=state.session===4?questions.slice(0,20):questions.slice(0,10);
+ const count=mode==="practice"?30:mode==="listen"?10:state.session===4?20:10;
+ let questions=freshQuestions(state.session,mode,count);
  state.deck=questions;
  state.stage="question";view="v22Question";question();
 }
@@ -199,5 +223,5 @@ const priorStart=start;start=function(ui,si,mode){if(ui===uiIndex){open(si);retu
 const priorCurriculum=curriculum;curriculum=function(){if(unit!==uiIndex)return priorCurriculum();const p=progress();shell('<div class="eyebrow">'+tr("unit")+' · A1–A2</div><h1>'+tr("name")+'</h1><p class="v22-vn">'+tr("sub")+'</p><p>'+tr("intro")+'</p><div class="v22-unit-list">'+sessionData.map((s,i)=>'<div class="card v22-unit-row"><div class="num">'+(i+1)+'</div><div class="v22-unit-info"><h3>'+d(s.title)+'</h3><p class="v22-vn">'+d(s.vn)+'</p><small>30 '+tr("practice")+' · 10 '+tr("listen")+' · '+(i===4?20:10)+' '+tr("test")+'</small></div><span class="tag">'+(p["assessment-"+i]===undefined?"—":p["assessment-"+i]+"/"+(i===4?20:10))+'</span><button class="btn small" onclick="v22Open('+i+')">'+tr("go")+' →</button></div>').join("")+'</div><p class="note">'+tr("note")+'</p>')};
 const priorRender=render;render=function(){if(view==="v22Hub")return hub();if(view==="v22Question")return question();return priorRender()};
 const priorHome=home;home=function(){priorHome();const main=document.querySelector("main");if(main){const count=main.querySelector(".overview-top .tag");if(count)count.title="Unit 04 includes a separate numerical assessment"}};
-window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,banks,sessionData,uiIndex};
+window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,banks,sessionData,uiIndex,freshQuestions};
 })();
