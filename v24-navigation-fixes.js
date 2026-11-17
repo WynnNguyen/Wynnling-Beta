@@ -66,7 +66,7 @@ grammarTopics=function(){
  shell('<section class="v24-grammar"><div class="eyebrow">'+(locale()?"THƯ VIỆN NGỮ PHÁP · A1–A2":"GRAMMAR REFERENCE · A1–A2")+'</div><h1>'+(locale()?"Công thức ngữ pháp":"Grammar Formulas")+'</h1><p>'+(locale()?"Chọn một thì để xem lại công thức, quy tắc sử dụng và luyện 5 câu cho từng dạng. Số đếm, ngày tháng và giờ nằm trong Learning Units.":"Choose a tense to review its formulas, usage rules, and practise five questions per structure. Numbers, dates, and time belong in Learning Units.")+'</p><div class="tense-topic-grid">'+available.map(u=>{
  const count=tenseGuides[u.id]?.types?.length||0;
  const label=u.id==="present"?"Thì hiện tại đơn":u.id==="continuous"?"Thì hiện tại tiếp diễn":"Thì tương lai đơn";
- return '<article class="tense-topic v24-tense"><span class="v24-tense-icon" aria-hidden="true">'+unitIcon(u)+'</span><span class="tag">A1–A2</span><h3>'+safe(u.name)+'</h3><small class="v24-tense-sub">'+label+'</small><p>'+count+' '+(locale()?"dạng công thức · 5 câu luyện tập mỗi dạng":"formula patterns · five practice questions each")+'</p><button class="btn" onclick="setTense(\''+u.id+'\')">'+(locale()?"Xem công thức & luyện tập":"Review formulas & practise")+' →</button></article>';
+ return '<article class="tense-topic v24-tense"><span class="tag">A1–A2</span><h3>'+safe(u.name)+'</h3><small class="v24-tense-sub">'+label+'</small><p>'+count+' '+(locale()?"dạng công thức · 5 câu luyện tập mỗi dạng":"formula patterns · five practice questions each")+'</p><button class="btn" onclick="setTense(\''+u.id+'\')">'+(locale()?"Xem công thức & luyện tập":"Review formulas & practise")+' →</button></article>';
  }).join("")+'</div></section>');
 };
 const oldReview=review;
