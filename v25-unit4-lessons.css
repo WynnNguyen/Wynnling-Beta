@@ -1,0 +1,9 @@
+/* Unit 04 teaching refinement: focused reference lists only where needed. */
+.v25-reference{margin-top:20px;padding-top:15px;border-top:1px solid #dae6f7}
+.v25-reference h3{font-size:15px;color:#335b90;margin:14px 0 10px}
+.v25-reference-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.v25-reference-list span{display:block;background:#f2f7ff;border:1px solid #e0eaf9;color:#35577c;padding:8px 10px;border-radius:9px;font-size:13px;line-height:1.5}
+.v22-samples{grid-template-columns:repeat(2,minmax(0,1fr))}
+.v22-sample{min-width:0}
+.v22-sample strong{overflow-wrap:anywhere}
+@media(max-width:640px){.v25-reference-list{grid-template-columns:1fr}.v22-samples{grid-template-columns:1fr}}
