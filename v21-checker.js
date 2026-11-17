@@ -6,7 +6,7 @@ const aliases=[
 [/\bgets up\b/g,"wakes up"],[/\bget up\b/g,"wake up"],[/\bgetting up\b/g,"waking up"],
 [/\belder sister\b/g,"older sister"],[/\belder brother\b/g,"older brother"],[/\blittle sister\b/g,"younger sister"],[/\blittle brother\b/g,"younger brother"],
 [/\bmom\b|\bmum\b/g,"mother"],[/\bdad\b/g,"father"],
-[/\bfrequently\b|\boften\b|\bgenerally\b/g,"usually"],
+
 [/\bgoes shopping\b/g,"shops"],[/\bgo shopping\b/g,"shop"],
 [/\bevery sunday\b|\bon sundays\b/g,"on sundays"],[/\bat university\b/g,"in university"],[/\bexams\b/g,"examinations"],[/\bexam\b/g,"examination"]
 ];
