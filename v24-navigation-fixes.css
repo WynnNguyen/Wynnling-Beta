@@ -1,0 +1,37 @@
+/* Wynnling v24: sticky navigation, scrolled branding, formula-only library, scalable stickers */
+.topnav{
+ position:sticky!important;
+ top:0!important;
+ z-index:110!important;
+ background:rgba(247,250,255,.96)!important;
+ -webkit-backdrop-filter:blur(14px);
+ backdrop-filter:blur(14px);
+ box-shadow:0 8px 20px rgba(25,59,104,.06);
+ border-bottom:1px solid #dbe6f7!important;
+ border-radius:0 0 14px 14px;
+ padding:10px 8px 12px!important;
+ margin:0 0 22px!important;
+ overscroll-behavior-x:contain;
+ -webkit-overflow-scrolling:touch;
+ scroll-padding-inline:12px;
+}
+.topnav .nav{flex:0 0 auto}
+.layout{overflow:visible!important}
+main{min-width:0}
+.shell{overflow:visible!important}
+.top{position:relative;z-index:1}
+.v24-grammar h1{margin-bottom:12px}
+.v24-grammar>p{max-width:740px;margin:0 0 24px;color:#5d7897;line-height:1.6}
+.v24-tense{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.v24-tense-icon{display:inline-grid;place-items:center;background:#e7f0ff;border-radius:15px;width:55px;height:55px;font-size:28px}
+.v24-tense .tag{margin-top:3px}
+.v24-tense h3{margin:0}
+.v24-tense-sub{color:#5c7ca2;font-size:13px}
+.v24-tense p{flex:1;margin:2px 0 10px}
+.v24-topic-icon{display:inline-grid;place-items:center;font-size:23px;line-height:1.3;min-height:30px}
+@media(max-width:760px){
+ .topnav{top:0!important;margin-inline:-15px!important;border-radius:0;padding-inline:12px!important;overflow-x:auto!important;scrollbar-width:none}
+ .topnav::-webkit-scrollbar{display:none}
+ .topnav .nav{min-height:42px}
+}
+@media(prefers-reduced-motion:reduce){.topnav{scroll-behavior:auto}}
