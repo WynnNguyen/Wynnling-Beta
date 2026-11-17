@@ -51,7 +51,7 @@ function numericAnswer(q,entered){
  }
  if(q.kind==="time"){
   if(q.mode==="digits"){
-   const x=raw.toLowerCase().replace(/\./g,"").replace(/\s+/g,"").match(/^(\d{1,2})[:.](\d{2})(am|pm)?$/);
+   const x=raw.toLowerCase().replace(/([ap])\.m\./g,"$1m").replace(/\s+/g,"").match(/^(\d{1,2})[:.](\d{2})(am|pm)?$/);
    if(!x)return false;let h=+x[1];const m=+x[2];if(m!==q.minute||m>59)return false;
    if(x[3]){if(h<1||h>12)return false;h=h%12+(x[3]==="pm"?12:0)}
    // Accept either 24h display or an unambiguous explicitly specified 12h display.
