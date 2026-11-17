@@ -79,13 +79,49 @@ const prices=[100,1000,10000,100000,1000000,10000000,100000000,1000000000,5000,1
 function makeQuestions(i){
  let out=[];
  if(i===0)out=numberValues.map((n,j)=>({kind:j%5===0?"ordinal":"number",value:j%5===0?1+j%31:n,mode:j%2?"words":"digits"}));
- if(i===1)out=Array.from({length:30},(_,j)=>j%3===0?{kind:"day",value:days[j%7],mode:"words"}:j%3===1?{kind:"month",value:months[Math.floor(j/3)%12],mode:"words"}:(()=>{const [d,m]=dateSamples[j%dateSamples.length];return {kind:"date",day:d,month:m,year:2026,mode:j%2?"words":"digits"}})());
+ if(i===1){const extraDates=[[2,1],[10,2],[6,3],[20,4],[28,7]];const dates=[...dateSamples,...extraDates];out=[...days.slice(0,5).map(value=>({kind:"day",value,mode:"words"})),...[0,2,4,6,9].map(j=>({kind:"month",value:months[j],mode:"words"})),...dates.map(([day,month],j)=>({kind:"date",day,month,year:2026,mode:j%2?"words":"digits"}))];}
  if(i===2)out=timeSamples.map(([h,m],j)=>({kind:"time",hour:h,minute:m,mode:j%3===0?"words":"digits",allow12:false}));
  if(i===3)out=prices.map((v,j)=>({kind:"money",value:v,mode:j%2?"words":"digits"}));
  if(i===4){const b=[...makeQuestions(0).slice(0,6),...makeQuestions(1).slice(0,8),...makeQuestions(2).slice(0,8),...makeQuestions(3).slice(0,8)];out=b.map((q,j)=>({...q,scenario:["appointment","class timetable","birthday","shopping"][j%4]}))}
  return out.map((q,j)=>({...q,id:"U4-S"+(i+1)+"-Q"+String(j+1).padStart(2,"0"),session:i}));
 }
 const banks=sessionData.map((_,i)=>makeQuestions(i));
+// Listening has its own question bank: no writing question is recycled as audio.
+const listeningSamples={
+  numbers:[42,69,84,117,245,390,705,1408,3620,20500],
+  ordinals:[4,6,7,10,11,13,14,15,20,22],
+  dates:[[4,2],[8,3],[16,4],[22,5],[6,7],[18,8],[24,9],[11,10],[26,11],[2,12]],
+  times:[[6,20],[8,10],[9,40],[10,25],[11,15],[12,45],[14,10],[15,55],[18,35],[21,5]],
+  prices:[200,2500,8500,17500,46000,63500,88000,146000,275000,805000]
+};
+function makeListeningQuestions(i){
+ let out=[];
+ if(i===0)out=listeningSamples.numbers.map((n,j)=>({kind:j%4===3?"ordinal":"number",value:j%4===3?listeningSamples.ordinals[j]:n,mode:"digits"}));
+ if(i===1)out=[
+  {kind:"day",value:"Saturday"},{kind:"month",value:"February"},
+  {kind:"date",day:4,month:2,year:2026},{kind:"day",value:"Sunday"},
+  {kind:"month",value:"September"},{kind:"date",day:18,month:8,year:2026},
+  {kind:"date",day:22,month:5,year:2026},{kind:"date",day:26,month:11,year:2026},
+  {kind:"month",value:"December"},{kind:"date",day:2,month:12,year:2026}
+ ];
+ if(i===2)out=listeningSamples.times.map(([h,m])=>({kind:"time",hour:h,minute:m,mode:"digits",allow12:false}));
+ if(i===3)out=listeningSamples.prices.map(value=>({kind:"money",value,mode:"digits"}));
+ if(i===4)out=[
+  {kind:"number",value:84,mode:"digits"},
+  {kind:"day",value:"Saturday"},
+  {kind:"time",hour:6,minute:20,mode:"digits",allow12:false},
+  {kind:"money",value:17500,mode:"digits"},
+  {kind:"date",day:16,month:4,year:2026,mode:"digits"},
+  {kind:"ordinal",value:14,mode:"digits"},
+  {kind:"time",hour:18,minute:35,mode:"digits",allow12:false},
+  {kind:"month",value:"September"},
+  {kind:"money",value:275000,mode:"digits"},
+  {kind:"date",day:26,month:11,year:2026,mode:"digits"}
+ ];
+ return out.map((q,j)=>({...q,id:"U4-L"+(i+1)+"-Q"+String(j+1).padStart(2,"0"),session:i,mode:q.mode||"words"}));
+}
+const listeningBanks=sessionData.map((_,i)=>makeListeningQuestions(i));
+
 const unit4={id:"everyday",name:"Numbers, Dates & Time",sub:"Số đếm, ngày tháng và giờ giấc",emoji:"🔢",level:"A1–A2",sessions:sessionData.map((s,i)=>({name:s.title,focus:s.vn,words:s.words,formula:"Reading, listening & numerical comprehension",v3vn:[],v3en:[],questions:[]}))};
 units.push(unit4);
 sessionFocus.everyday=Array.from({length:5},()=>[]);
@@ -150,7 +186,7 @@ function completed(){saveScore();const total=state.deck.length;show('<button cla
 function begin(mode){
  state.mode=mode;state.index=0;state.input="";state.answered=false;state.correct=false;state.score=0;
  let questions=[...banks[state.session]];
- if(mode==="listen")questions=questions.slice(0,10).map(q=>({...q,mode:"digits",allow12:false}));
+ if(mode==="listen")questions=[...listeningBanks[state.session]];
  if(mode==="assessment")questions=state.session===4?questions.slice(0,20):questions.slice(0,10);
  state.deck=questions;
  state.stage="question";view="v22Question";question();
