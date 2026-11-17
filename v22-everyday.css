@@ -12,3 +12,5 @@
 .v22-audio{border:1px solid #dae7f9;background:#f6faff;border-radius:14px;padding:24px;margin:13px 0 22px}.v22-audio p{margin:0 0 14px}.v22-clock{display:block;width:190px;height:190px;margin:12px auto 20px}
 .v22-big-score{font-size:clamp(50px,9vw,77px);font-weight:800;color:#3e6bad}.v22 .short-answer{margin:10px 0 5px}
 @media(max-width:750px){.v22-mode-grid{grid-template-columns:1fr}.v22-samples{grid-template-columns:1fr}.v22-unit-row{flex-wrap:wrap}.v22-unit-row .v22-unit-info{flex-basis:65%}.v22-unit-row .tag{margin-left:52px}.v22-unit-row>.btn{margin-left:auto}}
+
+.v22-guide{padding:15px 18px;margin:16px 0;border:1px solid #d5e4f6;border-radius:14px;background:#fbfdff}.v22-guide summary{font-weight:800;color:#3c6398;cursor:pointer}.v22-ref-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}.v22-ref-chips span{display:block;padding:8px 10px;background:#eff5ff;border-radius:9px;font-size:13px;color:#365782}.v22-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:650px){.v22-mode-grid,.v22-ref-chips{grid-template-columns:1fr}}
