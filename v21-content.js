@@ -135,6 +135,15 @@ const betterRules={
  }
 };
 for(const [tense,types] of Object.entries(betterRules))for(const [type,vi] of Object.entries(types))if(compactRules[tense]?.[type])compactRules[tense][type].vi=vi.replace(/\\n/g,"\n");
+// Keep single-word verbs separate from multiword expressions across non-Present-Simple units.
+for(const u of units.filter(item=>item.id==="continuous"||item.id==="future")){
+ for(const lesson of u.sessions){
+  for(const word of lesson.words||[]){
+   if(word[2]==="v"&&/\s/.test(word[0]))word[2]="phr";
+   if(word[2]==="phr"&&/^(before|after|near)$/i.test(word[0]))word[2]="prep";
+  }
+ }
+}
 const oldTopicSticker=topicSticker;
 topicSticker=function(name){
  const v=String(name).toLowerCase();
