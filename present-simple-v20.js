@@ -33,7 +33,7 @@ function selectVoice(){
  return chosen;
 }
 window.wynnlingSpeak=function(text,rate=1){
- if(!("speechSynthesis" in window)){alert("Audio playback is not available in this browser.");return}
+ if(!("speechSynthesis" in window)){alert(language==="vi"?"Trình duyệt này không hỗ trợ phát âm thanh.":"Audio playback is not available in this browser.");return}
  const synth=window.speechSynthesis;
  synth.cancel();
  const utterance=new SpeechSynthesisUtterance(String(text));
@@ -200,7 +200,13 @@ function override(){
 if(typeof speak==="function")speak=function(text,rate){window.wynnlingSpeak(text,rate)};
 units[0].sessions=ps.map((p,i)=>({name:p.name,focus:"Vocabulary · 15 grammar drills · 15 translations",formula:"Present Simple: S + V(s/es) / do(es) not + V₀ / am-is-are",words:p.words,v3vn:p.translations.slice(0,10).map(x=>[x.prompt,x.model]),v3en:p.translations.slice(10).map(x=>[x.prompt,x.model]),questions:[]}));
 sessionFocus.present=[["ordinaryAff"],["be"],["ordinaryAff"],["ordinaryNeg"],["frequency"],["be"]];
-const oldRender=render;render=function(){if(view==="psHub")return psHub();if(view==="psGrammar")return psGrammar();if(view==="psTranslation")return psTranslation();return oldRender()};
+function psSyncCurriculumLanguage(){
+ units[0].sessions.forEach((session,i)=>{
+  session.name=psSessionName(ps[i]);
+  session.focus=language==="vi"?"Từ vựng · 15 câu ngữ pháp · 15 câu dịch":"Vocabulary · 15 grammar drills · 15 translations";
+ });
+}
+const oldRender=render;render=function(){psSyncCurriculumLanguage();if(view==="psHub")return psHub();if(view==="psGrammar")return psGrammar();if(view==="psTranslation")return psTranslation();return oldRender()};
 const oldGo=goSession;goSession=function(ui,si){if(ui===0)return openPS(si);return oldGo(ui,si)};
 const oldStart=start;start=function(ui,si,kind){if(ui===0)return translationStart(si,kind==="test"?"cumulative":"session");return oldStart(ui,si,kind)};
 const oldCurriculum=curriculum;curriculum=function(){oldCurriculum();if(unit!==0)return;const btn=[...document.querySelectorAll("button")].find(b=>b.getAttribute("onclick")==="start(0,0,'test')");if(btn){btn.textContent=psT("cumulative")+" (30) →";const info=btn.closest(".session-lesson")?.querySelector("p");if(info)info.textContent=language==="vi"?"30 câu tổng hợp riêng từ 6 chủ đề đã học.":"30 mixed questions from the six completed topics."}};
