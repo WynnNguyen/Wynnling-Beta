@@ -20,11 +20,9 @@ function selectVoice(){
    const name=v.name+" "+v.voiceURI;
    let n=/^en-US$/i.test(v.lang)?50:/^en-GB$/i.test(v.lang)?24:0;
    if(/enhanced|premium|natural|neural/i.test(name))n+=70;
-   if(/samantha/i.test(name))n+=110;
-   else if(/microsoft (aria|jenny)/i.test(name))n+=95;
-   else if(/google us english/i.test(name))n+=88;
-   else if(/siri/i.test(name))n+=70;
-   else if(/allison|ava|zoe/i.test(name))n+=60;
+   if(/ava|siri|allison|karen|jenny|aria|zoe|google us english/i.test(name))n+=105;
+   else if(/daniel|moira|serena|alex/i.test(name))n+=65;
+   if(/samantha/i.test(name))n-=180;
    if(/compact|novelty|robot|whisper|bad news|good news|bells|bubbles|cellos/i.test(name))n-=150;
    return n;
  }
@@ -32,6 +30,25 @@ function selectVoice(){
  selectedVoiceURI=chosen.voiceURI;
  return chosen;
 }
+window.wynnlingVoiceOptions=function(){
+ const voices=window.speechSynthesis?.getVoices?.()||[];
+ return voices.filter(v=>/^en(?:-|$)/i.test(v.lang)).map(v=>({id:v.voiceURI,label:v.name+" ("+v.lang+")"}));
+};
+window.wynnlingSelectedVoice=function(){return selectVoice()?.voiceURI||""};
+window.wynnlingSetVoice=function(voiceURI){
+ localStorage.setItem(AUDIO_KEY,voiceURI);
+ selectedVoiceURI=voiceURI;
+ // Re-render only the active Present Simple page. The same choice is applied site-wide.
+ if(view==="psHub")psHub();else if(view==="psTranslation")psTranslation();
+};
+window.wynnlingVoiceUI=function(){
+ const voice=selectVoice(),options=window.wynnlingVoiceOptions();
+ const current=voice?.voiceURI||"";
+ const items=options.map(v=>'<option value="'+esc(v.id)+'"'+(v.id===current?' selected':'')+'>'+esc(v.label)+'</option>').join("");
+ const lbl=language==="vi"?"Giọng đọc tiếng Anh":"English voice";
+ const preview=language==="vi"?"Nghe thử":"Preview voice";
+ return '<div class="wynnling-voice-control" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0"><label for="wynnling-voice-picker" style="font-size:.9rem">'+lbl+'</label><select id="wynnling-voice-picker" style="max-width:100%;flex:1 1 170px;border:1px solid #cddaf2;border-radius:10px;padding:8px" onchange="window.wynnlingSetVoice(this.value)">'+items+'</select><button class="btn outline small" onclick="window.wynnlingSpeak(\'My sister always eats breakfast at seven.\',1)">'+preview+'</button></div>';
+};
 window.wynnlingSpeak=function(text,rate=1){
  if(!("speechSynthesis" in window)){alert(language==="vi"?"Trình duyệt này không hỗ trợ phát âm thanh.":"Audio playback is not available in this browser.");return}
  const synth=window.speechSynthesis;
@@ -74,7 +91,10 @@ function canonical(input,dir){
 let s=" "+clean(input)+" ";
 const replacements=dir==="vi"?[
 [/\bdoesn't\b/g,"does not"],[/\bdon't\b/g,"do not"],[/\bisn't\b/g,"is not"],[/\baren't\b/g,"are not"],[/\bi'm\b/g,"i am"],[/\bhe's\b/g,"he is"],[/\bshe's\b/g,"she is"],[/\bthey're\b/g,"they are"],[/\bwe're\b/g,"we are"],[/\bit's\b/g,"it is"],
-[/\bget(s)? up\b/g,"wake$1 up"],[/\bwake(s)? up\b/g,"wake$1 up"],[/\beating breakfast\b/g,"having breakfast"],[/\beats breakfast\b/g,"has breakfast"],[/\beat breakfast\b/g,"have breakfast"],[/\beat lunch\b/g,"have lunch"],[/\beat dinner\b/g,"have dinner"],[/\boften\b/g,"usually"],[/\bfrequently\b/g,"usually"],[/\bgenerally\b/g,"usually"],[/\bfrom time to time\b/g,"sometimes"],[/\bon sundays\b/g,"every sunday"],[/\bevery sunday\b/g,"every sunday"],[/\bolder sister\b/g,"elder sister"],[/\byounger brother\b/g,"little brother"],[/\byounger sister\b/g,"little sister"],[/\bexams\b/g,"examinations"],[/\bexam\b/g,"examination"],[/\bat university\b/g,"in university"],[/\bdo not\b/g,"not"],[/\bdoes not\b/g,"not"],[/\bwill not\b/g,"not"]
+[/\bget(s)? up\b/g,"wake$1 up"],[/\bwake(s)? up\b/g,"wake$1 up"],[/\beating breakfast\b/g,"having breakfast"],[/\beats breakfast\b/g,"has breakfast"],[/\beat breakfast\b/g,"have breakfast"],[/\beaten breakfast\b/g,"had breakfast"],
+[/\bat\s+(\d{1,2})\s+(?:in the morning|in the afternoon|in the evening|a m|p m|am|pm)\b/g,"at $1"],
+[/\b(\d{1,2})\s*(?:o'clock|am|pm)\b/g,"$1"],[/\b7\b/g,"seven"],[/\b6\b/g,"six"],[/\b8\b/g,"eight"],[/\b9\b/g,"nine"],[/\b10\b/g,"ten"],[/\b11\b/g,"eleven"],[/\b12\b/g,"twelve"],[/\b5\b/g,"five"],[/\b4\b/g,"four"],[/\b3\b/g,"three"],[/\b2\b/g,"two"],[/\b1\b/g,"one"],
+[/\bat (one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve) (?:in the morning|in the afternoon|in the evening)\b/g,"at $1"],[/\beat lunch\b/g,"have lunch"],[/\beat dinner\b/g,"have dinner"],[/\boften\b/g,"usually"],[/\bfrequently\b/g,"usually"],[/\bgenerally\b/g,"usually"],[/\bfrom time to time\b/g,"sometimes"],[/\bon sundays\b/g,"every sunday"],[/\bevery sunday\b/g,"every sunday"],[/\bolder sister\b/g,"elder sister"],[/\byounger brother\b/g,"little brother"],[/\byounger sister\b/g,"little sister"],[/\bexams\b/g,"examinations"],[/\bexam\b/g,"examination"],[/\bat university\b/g,"in university"],[/\bdo not\b/g,"not"],[/\bdoes not\b/g,"not"],[/\bwill not\b/g,"not"]
 ]:[
 [/\bthường xuyên\b/g,"thường"],[/\bhay\b/g,"thường"],[/\bkhông bao giờ\b/g,"chẳng bao giờ"],[/\bbố\b/g,"cha"],[/\bmẹ\b/g,"má"],[/\bông ấy\b/g,"ông"],[/\bcô ấy\b/g,"cô"],[/\banh ấy\b/g,"anh"],[/\bhọc bài\b/g,"ôn bài"],[/\bkỳ thi\b/g,"kì thi"],[/\bbài tập về nhà\b/g,"bài tập"],[/\bvào cuối tuần\b/g,"cuối tuần"]
 ];
@@ -96,7 +116,7 @@ if(item.dir==="vi"){
   return{status:"wrong",similarity:sim,reason:"Use doesn't/does not with he, she and it."};
  if(/\b(i|you|we|they)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:doesn't|does not)\b/.test(raw))
   return{status:"wrong",similarity:sim,reason:"Use don't/do not with I, you, we and they."};
- if(/\b(?:he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:have|go|wake|get|eat|brush|study|do|watch|work|play|help|enjoy|feel|worry|prefer|exercise|visit|prepare|earn|finish|collect|read|like|support|understand|respect|believe|agree|spend|share|live)\b/.test(raw))
+ if(/\b(?:he|she|it|(?:my|your|his|her|the)\s+(?:(?:older|younger|elder|little|big)\s+)?(?:sister|brother|mother|father|teacher|friend|manager|colleague))\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:have|go|wake|get|eat|brush|study|do|watch|work|play|help|enjoy|feel|worry|prefer|exercise|visit|prepare|earn|finish|collect|read|like|support|understand|respect|believe|agree|spend|share|live)\b/.test(raw))
   return{status:"wrong",similarity:sim,reason:"With he/she/it in Present Simple affirmative sentences, conjugate the verb: has, goes, wakes, studies, etc."};
  if(/\b(?:he|she|it)\s+(?:usually\s+|often\s+|always\s+|rarely\s+|sometimes\s+)?(?:are|am)\b/.test(raw))
   return{status:"wrong",similarity:sim,reason:"Use 'is' with he/she/it, not am/are."};
@@ -133,7 +153,7 @@ function openPS(session){unit=0;window.session=session;view="psHub";psHub();wind
 function psHub(){
  const p=ps[window.session||0],i=p.position;translationState.session=i;grammarState.session=i;
  shellPS(`<div class="eyebrow">${psT("heading")} · ${psT("session")} ${i+1} / 6</div><h1>${esc(psSessionName(p))}</h1><p>${psT("study")} ${psT("saved")}</p>
- <div class="card"><div class="row"><b>${psT("bank")}</b><span class="tag">${p.words.length} ${psT("words")}</span></div>
+ ${window.wynnlingVoiceUI()}<div class="card"><div class="row"><b>${psT("bank")}</b><span class="tag">${p.words.length} ${psT("words")}</span></div>
  ${["n","v","adj","adv","phr"].map(pos=>{const entries=p.words.filter(w=>w[2]===pos);return entries.length?`<div class="vocab-category"><h3>${psT(pos)}</h3><div class="vocab-table">${entries.map(w=>`<div class="vocab-entry"><div><strong>${esc(w[0])}</strong><br>${esc(w[1])}</div><button class="btn secondary small" aria-label="Listen: ${esc(w[0])}" onclick="window.psSpeak(${JSON.stringify(w[0]).replace(/"/g,"&quot;")})">🔊</button></div>`).join("")}</div></div>`:""}).join("")}</div>
  <div class="unit-grid" style="margin-top:16px"><div class="card"><h3>${psT("grammar")}</h3><p>${psT("gSubtitle")}</p><button class="btn" onclick="window.psGrammarStart(${i})">${psT("gBtn")}</button></div><div class="card"><h3>${psT("translation")}</h3><p>${psT("tSubtitle")}</p><button class="btn" onclick="window.psTranslateStart(${i})">${psT("tBtn")}</button></div></div>
  <div style="margin-top:17px"><button class="btn outline" onclick="navigate('curriculum')">${psT("backAll")}</button></div>`);
@@ -182,7 +202,7 @@ function psTranslation(){
  const stat=state.status==="correct"?"accepted":state.status==="review"?"review":"wrong";
  shellPS(`<div class="eyebrow">${psT("heading")} · ${state.kind==="cumulative"?psT("cumulative"):esc(psSessionName(p))}</div><h1>${state.kind==="cumulative"?psT("cumulative"):psT("translation")}</h1>
  <div class="row muted"><span>${x.id} · ${psT("question")} ${j+1}/${seq.length}</span><span>${Math.round(j/seq.length*100)}%</span></div><div class="progress meter"><div style="width:${j/seq.length*100}%"></div></div>
- <div class="card"><div class="prompt"><div class="eyebrow">${isVI?psT("translateEN"):psT("translateVI")}</div><h2>${esc(x.prompt)}</h2></div>
+ ${window.wynnlingVoiceUI()}<div class="card"><div class="prompt"><div class="eyebrow">${isVI?psT("translateEN"):psT("translateVI")}</div><h2>${esc(x.prompt)}</h2></div>
  <div class="tools"><button class="btn outline small" onclick="window.psHint('formula')">▤ ${state.formula?psT("formulaHide"):psT("formulaShow")}</button>
  <button class="btn outline small" onclick="window.psHint('hints')">💡 ${state.hints?psT("vocabHide"):psT("vocabShow")}</button>
  <button class="btn outline small" onclick="window.psHint('audio')">♫ ${state.audio?psT("audioHide"):psT("audioShow")}</button></div>
