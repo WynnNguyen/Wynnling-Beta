@@ -8,12 +8,12 @@ const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 const small=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
 const tens=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
 function numWords(n){
- n=Number(n);if(!Number.isSafeInteger(n)||n<0||n>999999999999)return"";
+ n=Number(n);if(!Number.isSafeInteger(n)||n<0||n>999999999)return"";
  if(n<20)return small[n];if(n<100)return tens[Math.floor(n/10)]+(n%10?"-"+small[n%10]:"");
  if(n<1000)return small[Math.floor(n/100)]+" hundred"+(n%100?" and "+numWords(n%100):"");
  if(n<1e6)return numWords(Math.floor(n/1000))+" thousand"+(n%1000?(n%1000<100?" and ":" ")+numWords(n%1000):"");
  if(n<1e9)return numWords(Math.floor(n/1e6))+" million"+(n%1e6?" "+numWords(n%1e6):"");
- return numWords(Math.floor(n/1e9))+" billion"+(n%1e9?" "+numWords(n%1e9):"");
+ return "";
 }
 function ordinal(n){
  const irregular={1:"first",2:"second",3:"third",5:"fifth",8:"eighth",9:"ninth",12:"twelfth"};
@@ -31,12 +31,13 @@ function englishTime(h,m,style){
 function hhmm(h,m){return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0")}
 function fmtAmount(n){return n.toLocaleString("en-US")+" ₫"}
 function strip(s){return String(s).toLowerCase().normalize("NFC").replace(/[’‘]/g,"'").replace(/[,₫.]/g," ").replace(/\s+/g," ").trim()}
-function numeral(s){const v=String(s).trim().replace(/[\s,.₫đ]/g,"");return /^\d+$/.test(v)?Number(v):NaN}
+function numeral(s){const raw=String(s).trim().replace(/\s*(?:₫|đ|vnd)$/i,"");if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(raw))return NaN;const n=Number(raw.replace(/,/g,""));return Number.isSafeInteger(n)&&n<=999999999?n:NaN}
 function normalWords(s){return strip(s).replace(/\b(and)\b/g,"").replace(/-/g," ").replace(/\bdongs?\b/g,"dong").replace(/\s+/g," ").trim()}
 function numericAnswer(q,entered){
  if(!entered.trim())return false;
  const raw=entered.trim();
  if(q.kind==="number"||q.kind==="money"){
+  if(!Number.isInteger(q.value)||q.value<0||q.value>999999999)return false;
   if(q.mode==="digits")return numeral(raw)===q.value;
   const n=normalWords(raw);
   const models=q.kind==="money"?[numWords(q.value)+" dong",numWords(q.value)+" vietnamese dong",numWords(q.value)+" vnd"]:[numWords(q.value)];
@@ -68,7 +69,7 @@ const sessionData=[
 {key:"num",title:"Numbers & Ordinals",vn:"Số đếm và số thứ tự",intro:"Numbers from zero to millions, and first/second/third.",vnIntro:"Số từ 0 đến hàng triệu và cách đọc số thứ tự.",samples:[["13 / 30","thirteen / thirty"],["105","one hundred and five"],["1,250","one thousand two hundred and fifty"],["21st","twenty-first"]],words:[["number","con số","n"],["hundred","trăm","n"],["thousand","nghìn","n"],["million","triệu","n"],["ordinal","số thứ tự","n"],["first","thứ nhất","adj"],["second","thứ hai","adj"],["third","thứ ba","adj"]]},
 {key:"date",title:"Days, Months & Dates",vn:"Thứ, tháng và ngày",intro:"Weekdays, months, ordinal dates, and years.",vnIntro:"Thứ trong tuần, tháng, ngày và năm.",samples:[["Monday","Thứ Hai"],["November 17","November seventeenth"],["17/11/2026","17 November 2026 (day/month/year)"],["2026","twenty twenty-six"]],words:[["weekday","ngày trong tuần","n"],["month","tháng","n"],["date","ngày tháng","n"],["year","năm","n"],["birthday","sinh nhật","n"],["calendar","lịch","n"],["today","hôm nay","adv"],["tomorrow","ngày mai","adv"]]},
 {key:"time",title:"Telling Time",vn:"Cách đọc giờ",intro:"Read digital times as hour + minutes first (7:20 = seven twenty), then learn past/to alternatives.",vnIntro:"Đọc kiểu giờ + phút trước (7:20 = seven twenty), sau đó học cách đọc past/to.",samples:[["07:00","seven o'clock"],["07:05","seven oh five / five past seven"],["07:20","seven twenty / twenty past seven"],["07:30","seven thirty / half past seven"],["07:45","seven forty-five / quarter to eight"],["07:50","seven fifty / ten to eight"]],words:[["clock","đồng hồ","n"],["hour","giờ","n"],["minute","phút","n"],["morning","buổi sáng","n"],["afternoon","buổi chiều","n"],["evening","buổi tối","n"],["early","sớm","adv"],["late","muộn","adj"]]},
-{key:"money",title:"Money & Prices",vn:"Tiền và giá cả",intro:"Learn place values first: hundred, thousand, ten thousand, hundred thousand, million.",vnIntro:"Học các hàng số trước: trăm, nghìn, chục nghìn, trăm nghìn, triệu.",samples:[["100 ₫","one hundred dong"],["1,000 ₫","one thousand dong"],["10,000 ₫","ten thousand dong"],["100,000 ₫","one hundred thousand dong"],["1,000,000 ₫","one million dong"],["10,000,000 ₫","ten million dong"],["100,000,000 ₫","one hundred million dong"],["1,000,000,000 ₫","one billion dong"]],words:[["price","giá","n"],["discount","giảm giá","n"],["change","tiền thối","n"],["cash","tiền mặt","n"],["buy","mua","v"],["sell","bán","v"],["pay","trả tiền","v"],["cheap","rẻ","adj"],["expensive","đắt","adj"]]},
+{key:"money",title:"Money & Prices",vn:"Tiền và giá cả",intro:"Learn place values first: hundred, thousand, ten thousand, hundred thousand, million.",vnIntro:"Học các hàng số trước: trăm, nghìn, chục nghìn, trăm nghìn, triệu.",samples:[["100 ₫","one hundred dong"],["1,000 ₫","one thousand dong"],["10,000 ₫","ten thousand dong"],["100,000 ₫","one hundred thousand dong"],["1,000,000 ₫","one million dong"],["10,000,000 ₫","ten million dong"],["100,000,000 ₫","one hundred million dong"],["999,999,999 ₫","nine hundred and ninety-nine million nine hundred and ninety-nine thousand nine hundred and ninety-nine dong"]],words:[["price","giá","n"],["discount","giảm giá","n"],["change","tiền thối","n"],["cash","tiền mặt","n"],["buy","mua","v"],["sell","bán","v"],["pay","trả tiền","v"],["cheap","rẻ","adj"],["expensive","đắt","adj"]]},
 {key:"mix",title:"Mixed Practice",vn:"Luyện tập tổng hợp",intro:"Appointments, schedules, birthdays and shopping.",vnIntro:"Cuộc hẹn, lịch trình, sinh nhật và mua sắm.",samples:[["Appointment","Thursday, November nineteenth · 3:30 p.m."],["Shopping","Three hundred and twenty-five thousand dong"],["Class schedule","Monday · 8:45 a.m."],["Birthday","June twenty-first"]],words:[["appointment","cuộc hẹn","n"],["schedule","lịch trình","n"],["meeting","cuộc họp","n"],["ticket","vé","n"],["birthday","sinh nhật","n"],["shopping","việc mua sắm","n"],["start","bắt đầu","v"],["cost","có giá","v"]]}
 ];
 function shuffleQuestions(items){
@@ -80,10 +81,13 @@ function freshQuestions(si,mode,count){
  const add=q=>{const key=[q.kind,q.value,q.day,q.month,q.hour,q.minute].join("|");if(used.has(key)||previous.has(key))return;used.add(key);out.push({...q,mode:listen?(q.kind==="day"||q.kind==="month"?"words":"digits"):q.mode||"words",session:si})};
  const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
  const date=()=>{const month=rand(1,12),maxDay=new Date(2026,month,0).getDate();return {kind:"date",day:rand(1,maxDay),month,year:2026,mode:Math.random()<.5?"words":"digits"}};
- const number=()=>Math.random()<.22?{kind:"ordinal",value:rand(1,31),mode:Math.random()<.5?"words":"digits"}:{kind:"number",value:[rand(0,99),rand(100,999),rand(1000,9999),rand(10000,999999),rand(1000000,9999999)][rand(0,4)],mode:Math.random()<.5?"words":"digits"};
+ let numberIndex=0;
+ const bands=[[0,9],[10,99],[100,999],[1000,9999],[10000,99999],[100000,999999],[1000000,9999999],[10000000,99999999],[100000000,999999999]];
+ const randomValue=()=>{const [lo,hi]=bands[numberIndex++%bands.length];const n=rand(lo,hi);return Math.random()<.3?Math.floor(n/10)*10:n};
+ const number=()=>Math.random()<.22?{kind:"ordinal",value:rand(1,31),mode:Math.random()<.5?"words":"digits"}:{kind:"number",value:randomValue(),mode:Math.random()<.5?"words":"digits"};
  const calendar=()=>{const x=rand(0,9);return x<2?{kind:"day",value:days[rand(0,6)],mode:"words"}:x<4?{kind:"month",value:months[rand(0,11)],mode:"words"}:date()};
  const time=()=>({kind:"time",hour:rand(0,23),minute:rand(0,11)*5,mode:Math.random()<.5?"words":"digits",allow12:false});
- const money=()=>{const band=rand(0,5),value=band===0?rand(1,99)*100:band===1?rand(1,999)*1000:band===2?rand(1,999)*10000:band===3?rand(1,999)*100000:band===4?rand(1,999)*1000000:rand(1,99)*100000000;return {kind:"money",value,mode:Math.random()<.5?"words":"digits"}};
+ const money=()=>({kind:"money",value:randomValue(),mode:Math.random()<.5?"words":"digits"});
  const makers=[number,calendar,time,money];
  for(let attempts=0;out.length<count&&attempts<count*100;attempts++){
   let q=si===4?makers[attempts%4]():makers[si]();
@@ -127,7 +131,7 @@ function model(q){
  if(q.kind==="number")return q.mode==="digits"?String(q.value):numWords(q.value);
  if(q.kind==="ordinal")return q.mode==="digits"?q.value+((q.value%100>=11&&q.value%100<=13)?"th":q.value%10===1?"st":q.value%10===2?"nd":q.value%10===3?"rd":"th"):ordinal(q.value);
  if(q.kind==="day"||q.kind==="month")return q.value;
- if(q.kind==="date")return q.mode==="digits"?hhmm(q.day,q.month)+"/"+q.year:months[q.month-1]+" "+ordinal(q.day);
+ if(q.kind==="date")return q.mode==="digits"?String(q.day).padStart(2,"0")+"/"+String(q.month).padStart(2,"0")+"/"+q.year:months[q.month-1]+" "+ordinal(q.day);
  if(q.kind==="time")return q.mode==="digits"?hhmm(q.hour,q.minute):englishTime(q.hour,q.minute,"past");
  if(q.kind==="money")return q.mode==="digits"?fmtAmount(q.value):numWords(q.value)+" dong";
  return "";
@@ -136,7 +140,7 @@ function cue(q){
  if(q.kind==="number")return q.mode==="digits"?numWords(q.value):q.value.toLocaleString("en-US");
  if(q.kind==="ordinal")return q.mode==="digits"?ordinal(q.value):q.value+((q.value%10===1&&q.value!==11)?"st":(q.value%10===2&&q.value!==12)?"nd":(q.value%10===3&&q.value!==13)?"rd":"th");
  if(q.kind==="day"||q.kind==="month")return ({"Monday":"Thứ Hai","Tuesday":"Thứ Ba","Wednesday":"Thứ Tư","Thursday":"Thứ Năm","Friday":"Thứ Sáu","Saturday":"Thứ Bảy","Sunday":"Chủ Nhật","January":"Tháng Một","February":"Tháng Hai","March":"Tháng Ba","April":"Tháng Tư","May":"Tháng Năm","June":"Tháng Sáu","July":"Tháng Bảy","August":"Tháng Tám","September":"Tháng Chín","October":"Tháng Mười","November":"Tháng Mười Một","December":"Tháng Mười Hai"})[q.value];
- if(q.kind==="date")return q.mode==="digits"?months[q.month-1]+" "+ordinal(q.day)+", "+q.year:hhmm(q.day,q.month)+"/"+q.year;
+ if(q.kind==="date")return q.mode==="digits"?months[q.month-1]+" "+ordinal(q.day)+", "+q.year:String(q.day).padStart(2,"0")+"/"+String(q.month).padStart(2,"0")+"/"+q.year;
  if(q.kind==="time")return q.mode==="digits"?englishTime(q.hour,q.minute,"past"):hhmm(q.hour,q.minute);
  if(q.kind==="money")return q.mode==="digits"?numWords(q.value)+" dong":fmtAmount(q.value);
  return "";
@@ -157,8 +161,8 @@ function question(){
  const feedback=state.answered?'<div class="feedback '+(state.correct?"":"review")+'"><strong>'+tr(state.correct?"correct":"wrong")+'</strong><p>'+tr("reference")+': <b>'+d(model(q))+'</b></p>'+(state.correct?"":'<p>'+tr("review")+'</p>')+'</div>':"";
  show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><h1>'+d(sessionData[state.session].title)+' · '+tr(state.mode==="assessment"?"test":state.mode==="listen"?"listen":"practice")+'</h1><p class="v22-vn">'+d(sessionData[state.session].vn)+'</p><div class="row muted"><span>'+tr("questions")+' '+(state.index+1)+' / '+state.deck.length+'</span><span>'+tr("score")+': '+state.score+'</span></div><div class="progress meter"><div style="width:'+Math.round(100*state.index/state.deck.length)+'%"></div></div><div class="card"><p class="v22-instruction">'+d(questionPrompt(q))+'</p>'+shown+'<label for="v22Answer"><b>'+tr("answer")+'</b></label><input id="v22Answer" class="short-answer" style="max-width:100%" autocomplete="off" value="'+d(state.input)+'" '+(state.answered?"disabled":"")+' oninput="v22Input(this.value)" placeholder="'+tr("prompt")+'"><div class="check-next-row"><button class="btn" onclick="v22Check()" '+(state.answered?"disabled":"")+'>'+tr("check")+'</button>'+(state.answered?'<button class="btn secondary" onclick="v22Next()">'+tr(state.index===state.deck.length-1?"finish":"next")+' →</button>':"")+'</div>'+feedback+'</div>');
 }
-function completed(){saveScore();const total=state.deck.length;show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><div class="card"><h1>'+tr("result")+'</h1><div class="v22-big-score">'+state.score+' / '+total+'</div><p>'+tr("score")+'</p><div class="actions"><button class="btn" onclick="v22Begin(\''+state.mode+'\')">'+tr("again")+'</button><button class="btn secondary" onclick="v22Hub()">'+tr("back")+'</button></div></div>')}
-function begin(mode){
+function completed(){saveScore();WynnlingAttempts.finish();return;const total=state.deck.length;show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><div class="card"><h1>'+tr("result")+'</h1><div class="v22-big-score">'+state.score+' / '+total+'</div><p>'+tr("score")+'</p><div class="actions"><button class="btn" onclick="v22Begin(\''+state.mode+'\')">'+tr("again")+'</button><button class="btn secondary" onclick="v22Hub()">'+tr("back")+'</button></div></div>')}
+function begin(mode){WynnlingAttempts.begin({restart:()=>begin(mode)});
  state.mode=mode;state.index=0;state.input="";state.answered=false;state.correct=false;state.score=0;
  const count=mode==="practice"?30:mode==="listen"?10:state.session===4?20:10;
  let questions=freshQuestions(state.session,mode,count);
@@ -167,7 +171,7 @@ function begin(mode){
 }
 function open(si){unit=uiIndex;session=si;state.session=si;state.stage="hub";view="v22Hub";hub();window.scrollTo(0,0)}
 function back(){unit=uiIndex;view="curriculum";render();window.scrollTo(0,0)}
-window.v22Open=open;window.v22All=back;window.v22Hub=()=>open(state.session);window.v22Begin=begin;window.v22Input=x=>{state.input=x};window.v22Check=()=>{if(state.answered||!state.input.trim())return;const q=state.deck[state.index];state.correct=numericAnswer(q,state.input);state.score+=Number(state.correct);state.answered=true;question()};window.v22Next=()=>{if(!state.answered)return;state.index++;state.answered=false;state.input="";question()};window.v22Speak=(rate)=>{const q=state.deck[state.index];if(window.wynnlingSpeak)window.wynnlingSpeak(audioText(q),rate);else if(typeof speak==="function")speak(audioText(q),rate)};
+window.v22Open=open;window.v22All=back;window.v22Hub=()=>open(state.session);window.v22Begin=begin;window.v22Input=x=>{state.input=x};window.v22Check=()=>{if(state.answered||!state.input.trim())return;const q=state.deck[state.index];state.correct=numericAnswer(q,state.input);state.score+=Number(state.correct);WynnlingAttempts.record(state.index,{prompt:questionPrompt(q)+" "+cue(q),model:model(q)},state.input,state.correct,x=>numericAnswer(q,x));state.answered=true;question()};window.v22Next=()=>{if(!state.answered)return;state.index++;state.answered=false;state.input="";question()};window.v22Speak=(rate)=>{const q=state.deck[state.index];if(window.wynnlingSpeak)window.wynnlingSpeak(audioText(q),rate);else if(typeof speak==="function")speak(audioText(q),rate)};
 const priorGoSession=goSession;goSession=function(ui,si){if(ui===uiIndex)return open(si);return priorGoSession(ui,si)};
 const priorStart=start;start=function(ui,si,mode){if(ui===uiIndex){open(si);return begin(mode==="test"?"assessment":"practice")}return priorStart(ui,si,mode)};
 const priorCurriculum=curriculum;curriculum=function(){if(unit!==uiIndex)return priorCurriculum();const p=progress();shell('<div class="eyebrow">'+tr("unit")+' · A1–A2</div><h1>'+tr("name")+'</h1><p class="v22-vn">'+tr("sub")+'</p><p>'+tr("intro")+'</p><div class="v22-unit-list">'+sessionData.map((s,i)=>'<div class="card v22-unit-row"><div class="num">'+(i+1)+'</div><div class="v22-unit-info"><h3>'+d(s.title)+'</h3><p class="v22-vn">'+d(s.vn)+'</p><small>30 '+tr("practice")+' · 10 '+tr("listen")+' · '+(i===4?20:10)+' '+tr("test")+'</small></div><span class="tag">'+(p["assessment-"+i]===undefined?"—":p["assessment-"+i]+"/"+(i===4?20:10))+'</span><button class="btn small" onclick="v22Open('+i+')">'+tr("go")+' →</button></div>').join("")+'</div><p class="note">'+tr("note")+'</p>')};

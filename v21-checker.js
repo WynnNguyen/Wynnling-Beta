@@ -1,66 +1,34 @@
-/* Wynnling v21 | Shared answer evaluator. Browser-local; unknown paraphrases need human review. */
+/* Context-preserving approved equivalences; no similarity-based automatic credit. */
 (function(){
-"use strict";
-const aliases=[
-[/\beats breakfast\b/g,"has breakfast"],[/\beat breakfast\b/g,"have breakfast"],[/\beating breakfast\b/g,"having breakfast"],
-[/\bgets up\b/g,"wakes up"],[/\bget up\b/g,"wake up"],[/\bgetting up\b/g,"waking up"],
-[/\belder sister\b/g,"older sister"],[/\belder brother\b/g,"older brother"],[/\blittle sister\b/g,"younger sister"],[/\blittle brother\b/g,"younger brother"],
-[/\bmom\b|\bmum\b/g,"mother"],[/\bdad\b/g,"father"],
-
-[/\bgoes shopping\b/g,"shops"],[/\bgo shopping\b/g,"shop"],
-[/\bevery sunday\b|\bon sundays\b/g,"on sundays"],[/\bat university\b/g,"in university"],[/\bexams\b/g,"examinations"],[/\bexam\b/g,"examination"]
-];
-const contracted=[[/\bdoesn't\b/g,"does not"],[/\bdon't\b/g,"do not"],[/\bisn't\b/g,"is not"],[/\baren't\b/g,"are not"],[/\bwon't\b/g,"will not"],[/\bcan't\b/g,"cannot"],[/\bi'm\b/g,"i am"],[/\bhe's\b/g,"he is"],[/\bshe's\b/g,"she is"],[/\bthey're\b/g,"they are"],[/\bwe're\b/g,"we are"],[/\bit's\b/g,"it is"]];
-const nums={one:"1",two:"2",three:"3",four:"4",five:"5",six:"6",seven:"7",eight:"8",nine:"9",ten:"10",eleven:"11",twelve:"12"};
-const vietnamese=[[/\bthường xuyên\b/g,"thường"],[/\bhay\b/g,"thường"],[/\bcha\b|\bba\b/g,"bố"],[/\bmá\b/g,"mẹ"],[/\bkì thi\b/g,"kỳ thi"],[/\bôn tập\b/g,"ôn bài"],[/\bhằng ngày\b/g,"mỗi ngày"]];
-function clean(s){return String(s||"").toLowerCase().normalize("NFC").replace(/[’‘]/g,"'").replace(/[.,!?;:()“”"]/g," ").replace(/\s+/g," ").trim()}
-function normal(s,vi=false){
- let x=" "+clean(s)+" ";const ops=vi?vietnamese:[...contracted,...aliases];
- for(const [a,b] of ops)x=x.replace(a,b);
+'use strict';
+const contractions={"won't":"will not","can't":"cannot","don't":"do not","doesn't":"does not","isn't":"is not","aren't":"are not","wasn't":"was not","weren't":"were not","i'm":"i am","you're":"you are","we're":"we are","they're":"they are","he's":"he is","she's":"she is","it's":"it is","i'll":"i will","you'll":"you will","he'll":"he will","she'll":"she will","we'll":"we will","they'll":"they will","it'll":"it will"};
+function basic(s){let x=String(s||'').normalize('NFC').toLowerCase().replace(/[’‘]/g,"'").trim();for(const [a,b] of Object.entries(contractions))x=x.replace(new RegExp('\\b'+a+'\\b','g'),b);return x.replace(/[.!?]+$/,'').replace(/\s+/g,' ').trim()}
+function normal(s,vi=false){let x=basic(s);
+ // Semicolons, internal periods and colons remain significant. Commas are optional in introductory phrases.
+ x=x.replace(/,/g,' ').replace(/\s+/g,' ').trim();
+ if(vi)return x.replace(/(^|\s)(?:cha|ba)(?= tôi| bạn| anh ấy| cô ấy| chúng tôi)/g,'$1bố').replace(/(^|\s)má(?= tôi| bạn| anh ấy| cô ấy| chúng tôi)/g,'$1mẹ').replace(/hằng ngày/g,'mỗi ngày');
+ x=x.replace(/\b(eat|eats|eating) (breakfast|lunch|dinner)\b/g,(_,v,n)=>({eat:'have',eats:'has',eating:'having'}[v])+' '+n)
+ .replace(/\btelevision\b/g,'tv').replace(/\bnormally\b/g,'usually').replace(/\bthis evening\b/g,'tonight')
+ .replace(/\bswimming pool\b/g,'pool').replace(/\bmom\b|\bmum\b/g,'mother').replace(/\bdad\b/g,'father')
+ .replace(/\belder (sister|brother)\b/g,'older $1').replace(/\bon sundays\b/g,'every sunday');
+ return x;
+}
+const times=s=>{const x=normal(s);return (x.match(/\b(?:tonight|this morning|this afternoon|tomorrow|today|every (?:day|night|week|morning|evening)|next (?:week|month|year)|in the (?:morning|evening|afternoon)|now|usually)\b/g)||[]).sort().join('|')};
+function grade(item,response,lang='en'){
+ const vi=item.dir==='en'||item.dir==='en-vi';const a=normal(response,vi),m=normal(item.model,vi);
+ const messages={empty:['Write an answer first.','Hãy nhập câu trả lời.'],correct:['Correct! Meaning and grammar match.','Đúng! Ý nghĩa và ngữ pháp phù hợp.'],acceptable:['Acceptable! This expression has the same meaning.','Chấp nhận! Cách diễn đạt này có cùng ý nghĩa.'],time:['Check the time expression: tonight means this evening; in the evening describes a general time or routine.','Kiểm tra thời gian: tonight là tối nay; in the evening là vào buổi tối.'],subject:['Check the subject: keep the same person as the prompt.','Kiểm tra chủ ngữ: giữ đúng người trong câu gốc.'],grammar:['Check the auxiliary, verb form and word order. After will or will not, use the base verb.','Kiểm tra trợ động từ, dạng động từ và trật tự từ. Sau will hoặc will not, dùng động từ nguyên mẫu.'],meaning:['This answer changes or omits part of the meaning. Compare it with the model.','Câu trả lời thay đổi hoặc thiếu ý. Hãy đối chiếu đáp án mẫu.'],punctuation:['Keep punctuation that separates clauses or identifies the person being addressed.','Giữ dấu câu phân tách mệnh đề hoặc chỉ người được gọi.']};
+ const result=(status,code)=>({status,category:status==='correct'?(code==='acceptable'?'Acceptable':'Correct'):'Incorrect',code,message:messages[code][lang==='vi'?1:0],reason:messages[code][lang==='vi'?1:0],confidence:status==='correct'?1:0});
+ if(!a)return result('wrong','empty');
+ if(!vi&&/\b(?:let us|let's) (?:eat|help|visit|call),/i.test(basic(item.model))!==/\b(?:let us|let's) (?:eat|help|visit|call),/i.test(basic(response)))return result('wrong','punctuation');
+ const approved=[item.model,...(item.accepted||[]),...(item.answers||[])].filter(x=>typeof x==='string');
+ if(approved.some(x=>normal(x,vi)===a))return result('correct',basic(response).replace(/,/g,'')===basic(item.model).replace(/,/g,'')?'correct':'acceptable');
  if(!vi){
-  x=x.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/g,m=>nums[m]);
-  x=x.replace(/\b(\d{1,2})\s+o'clock\b/g,"$1");
-  x=x.replace(/\bat (\d{1,2}) in the morning\b/g,"at $1");
+ if(times(response)!==times(item.model))return result('wrong','time');
+ const subject=s=>basic(s).match(/^(?:i|you|he|she|it|we|they)\b/)?.[0];
+ if(subject(response)&&subject(item.model)&&subject(response)!==subject(item.model))return result('wrong','subject');
+ if(/\b(?:will (?:not )?\w+(?:ing|ed|s)\b|does(?: not)? \w+s\b)|\b(?:he|she|it) (?:have|go|play|work|study)\b/.test(a)||/\bwill\b/.test(m)!==/\bwill\b/.test(a))return result('wrong','grammar');
  }
- return x.replace(/\s+/g," ").trim();
+ return result('wrong','meaning');
 }
-function negative(s,vi){return vi?/(?:^|\s)(?:không|chẳng|chưa|đừng|chả)(?:\s|$)/.test(s):/\b(?:not|never|cannot)\b/.test(s)}
-function badAgreement(s){
- // First reject simple subject/auxiliary errors, then affirmative base verbs after singular subjects.
- const singular="(?:he|she|it|(?:my|your|his|her|the)\\s+(?:(?:older|younger|elder|little|big)\\s+)?(?:sister|brother|father|mother|teacher|friend|manager|colleague|company))";
- const verb="(?:have|eat|wake|get|go|do|play|work|read|watch|study|enjoy|brush|help|prepare|finish|visit|like|feel|prefer|collect|spend|live|care|listen|earn|deliver|manage|write|cook|run|swim|train|wait|buy|walk|order|travel|arrive|stay|start|join|come|bring|pass|improve|rain|hope|understand|respect|believe|share|agree|worry)";
- const adverbs="(?:(?:always|usually|often|rarely|sometimes|never)\\s+)?";
- if(new RegExp("\\b"+singular+"\\s+"+adverbs+"(?:don't|do not)\\b").test(s))return"doDoes";
- if(/\b(?:i|you|we|they|my parents|our colleagues)\s+(?:(?:always|usually|often|rarely|sometimes)\s+)?(?:doesn't|does not)\b/.test(s))return"doDoes";
- if(new RegExp("\\b"+singular+"\\s+"+adverbs+verb+"\\b").test(s))return"thirdPerson";
- if(/\b(?:he|she|it)\s+(?:am|are)\b|\bi\s+(?:is|are)\b/.test(s))return"beAgreement";
- if(/\b(?:does|doesn't|does not|do|don't|do not)\s+(?:goes|wakes|eats|has|plays|works|studies|likes|watches|does|reads|prepares|enjoys|visits)\b/.test(s))return"baseAfterAux";
- return"";
-}
-const messages={
- en:{correct:"Equivalent meaning and grammar accepted.",review:"This may be a valid alternative. Compare it with the model or ask your teacher to review it.",polarity:"The negative meaning has changed.",agreement:"Check the subject, auxiliary, and verb form.",tense:"Check the requested tense and verb form.",question:"Keep the question form and word order.",subject:"Check who performs the action."},
- vi:{correct:"Đã chấp nhận cách diễn đạt tương đương.",review:"Cách dịch này có thể đúng. Hãy đối chiếu đáp án hoặc nhờ giáo viên kiểm tra.",polarity:"Ý phủ định của câu đã thay đổi.",agreement:"Kiểm tra chủ ngữ, trợ động từ và dạng động từ.",tense:"Kiểm tra thì và dạng động từ.",question:"Kiểm tra dạng câu hỏi và trật tự từ.",subject:"Kiểm tra chủ thể thực hiện hành động."}
-};
-function grade(item,response,uiLang="en"){
- const msg=messages[uiLang==="vi"?"vi":"en"];
- const isVi=(item.dir==="en"||item.dir==="en-vi");
- const given=normal(response,isVi),model=normal(item.model,isVi);
- const result=(status,code)=>({status,code,reason:msg[code]||msg.review,message:msg[code]||msg.review,confidence:status==="correct"?1:0});
- if(!given)return result("wrong","review");
- if(given===model)return result("correct","correct");
- if(negative(model,isVi)!==negative(given,isVi))return result("wrong","polarity");
- if(!isVi){
-  // Unambiguous agreement errors reject even when the meaning is otherwise right.
-  if(badAgreement(clean(response)))return result("wrong","agreement");
-  const tense=(item.rubric&&item.rubric.targetTense)||item.tense||"";
-  if(/continuous/.test(tense)&&!/\b(?:am|is|are)\s+(?:not\s+)?\w+ing\b/.test(given)&&/\b(?:am|is|are)\s+\w+ing\b/.test(model))return result("wrong","tense");
-  if(/future/.test(tense)&&/\bwill\b/.test(model)&&!/\bwill\b/.test(given))return result("review","tense"); // alternate futures can be valid
-  if(/^\s*(?:do|does|will|am|is|are|what|where|when|why|how|who)\b/.test(model)!==/^\s*(?:do|does|will|am|is|are|what|where|when|why|how|who)\b/.test(given))return result("review","question");
- }
- const approved=[...(item.accepted||[]),...(item.answers||[])];
- if(approved.some(a=>normal(a,isVi)===given))return result("correct","correct");
- // Similar strings are NOT automatically graded correct; uncertain semantic alternatives need review.
- return result("review","review");
-}
-window.WynnlingV21={version:"21.1",grade,normalize:normal};
+window.WynnlingV21={version:'22',grade,normalize:normal,basic};
 })();
