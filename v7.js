@@ -23,4 +23,3 @@ const olderGuide7=guide;
 guide=function(){olderGuide7();document.querySelectorAll('.formula-card').forEach((card,i)=>{const type=tenseGuides[drillTense].types[i]?.[0],note=card.querySelector('.concept-note');if(note)note.textContent=compactRule(drillTense,type)})};
 const olderSessionHub7=sessionHub;
 sessionHub=function(){olderSessionHub7();const note=document.querySelector('.session-focus .card:nth-child(2) .note');const tense=units[unit].id;if(note){const types=sessionFocus[tense][session];note.textContent=types.map(type=>compactRule(tense,type)).join('\n');note.classList.add('grammar-short')}};
-render();

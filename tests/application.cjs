@@ -14,7 +14,7 @@ for(const [start,input,check,next,count]of [['psGrammarStart','psGrammarInput','
 // Legacy grammar: five results and no duplicate submissions.
 run("startDrill('future','negative')");for(let i=0;i<5;i++){run("answer=\"won't\";checkDrill();checkDrill();advanceDrill()")}assert.equal(ctx.WynnlingAttempts.state().records.size,5);assert.match(app.innerHTML,/5\/5/);
 // Cumulative tests must use their own unit, with stable mixed order.
-run("start(2,0,'test')");assert.equal(run('questionList().length'),20);assert.ok(run("questionList().every(x=>units[2].sessions.includes(x.source))"));const order=run('questionList().map(x=>x.prompt).join("|")');run('practice()');assert.equal(run('questionList().map(x=>x.prompt).join("|")'),order);
+run("start(2,0,'test')");assert.equal(run('questionList().length'),20);assert.ok(run("questionList().every(x=>units[2].sessions.some(s=>s.words===x.source.words))"));const order=run('questionList().map(x=>x.prompt).join("|")');run('practice()');assert.equal(run('questionList().map(x=>x.prompt).join("|")'),order);
 // All future building token sets contain will; affirmative, negative, question models preserved.
 for(let i=0;i<5;i++){ctx.WynnlingBuild.start(2,i);assert.match(app.innerHTML,/will/);}
 // Numerical complete attempt has exactly ten score entries; duplicate checks do nothing.

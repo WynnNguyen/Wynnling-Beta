@@ -7,21 +7,25 @@ const text=(en,vi)=>language==='vi'?vi:en;
 function begin(config){active={...config,records:new Map(),complete:false};review=null;}
 function record(key,item,response,correct,validate,options=[]){
  if(!active||active.complete||active.records.has(key))return;
- active.records.set(key,{item:{...item},response,correct,validate,options:[...options]});
+ active.records.set(key,{item:{...item},response,correct,validate,options:[...options]});return true;
 }
 function result(){
  if(!active)return;
+ if(!active.records.size)return WynnlingData.unavailable();
+ if(!active.complete)active.onComplete?.(active);
  active.complete=true;view='v22Results';
  const rows=[...active.records.values()],right=rows.filter(r=>r.correct).length,wrong=rows.length-right;
  shell(`<div class="practice"><h1>${text('Exercise complete','Hoàn thành bài tập')}</h1><div class="card"><h2>${right}/${rows.length}</h2><p>${text('Correct','Đúng')}: ${right} · ${text('Incorrect','Sai')}: ${wrong}</p>${!wrong?'<p>'+text('Perfect! There are no mistakes to review.','Hoàn hảo! Không có câu sai để ôn lại.')+'</p>':''}<div class="actions"><button class="btn secondary" onclick="WynnlingAttempts.review()">${text('Review Mistakes','Ôn lại câu sai')}</button><button class="btn" onclick="WynnlingAttempts.restart()">${text('Try Again','Làm lại')}</button><button class="btn outline" onclick="WynnlingAttempts.lessons()">${text('Back to Lessons','Về bài học')}</button></div></div></div>`);
 }
 function showReview(){
+ if(!active||!review)return;
  view='v22Mistakes';const r=review.rows[review.index];
  if(!r){shell(`<div class="practice"><h1>${text('Review complete','Hoàn thành ôn tập')}</h1><div class="card"><p>${text('Mistakes corrected','Số câu đã sửa đúng')}: ${review.correct}/${review.rows.length}</p><p>${text('Your original score is unchanged.','Điểm ban đầu không thay đổi.')}</p><button class="btn" onclick="WynnlingAttempts.results()">${text('Back to results','Về kết quả')}</button></div></div>`);return;}
  const controls=r.options.length?`<div class="vocab-check-choices">${r.options.map(o=>`<button class="btn ${review.input===o?'':'outline'}" aria-pressed="${review.input===o}" ${review.checked?'disabled':''} onclick="WynnlingAttempts.pick(${e(JSON.stringify(o))})">${e(o)}</button>`).join('')}</div>`:`<label for="mistakeAnswer">${text('Your new answer','Câu trả lời mới')}</label><textarea id="mistakeAnswer" class="answer" ${review.checked?'disabled':''} oninput="WynnlingAttempts.input(this.value)">${e(review.input)}</textarea>`;
  shell(`<div class="practice"><h1>${text('Review Mistakes','Ôn lại câu sai')} · ${review.index+1}/${review.rows.length}</h1><div class="card"><h2>${e(r.item.prompt)}</h2><p>${text('Previous answer','Câu trả lời trước')}: ${e(r.response)}</p>${controls}<button class="btn" ${review.checked?'disabled':''} onclick="WynnlingAttempts.check()">${text('Check answer','Kiểm tra')}</button>${review.checked?`<div class="feedback ${review.ok?'':'review'}"><b>${review.ok?text('Correct!','Đúng!'):text('Incorrect','Chưa đúng')}</b><p>${e(r.item.model)}</p></div><button class="btn" onclick="WynnlingAttempts.next()">${text('Next','Tiếp theo')} →</button>`:''}<button class="btn outline" onclick="WynnlingAttempts.results()">${text('Back to results','Về kết quả')}</button></div></div>`);
 }
 function confirmAction(kind,action){
+ if(pending)return;
  pending=action;
  const restart=kind==='restart';
  const dialog=document.createElement('dialog');dialog.id='wynnling-confirm';
@@ -37,14 +41,14 @@ window.WynnlingAttempts={begin,record,finish:result,results:result,unfinished,
  restart(){const fn=active?.restart;if(fn)confirmAction('restart',fn)},
  lessons(){active=null;view='curriculum';render()},
  leave(fn){if(unfinished())confirmAction('leave',()=>{view='curriculum';render()});else{active=null;fn()}},
- state:()=>active,render(){if(view==='v22Results')result();else showReview()}
+ cancel(){active=null;review=null;pending=null},state:()=>active,render(){if(view==='v22Results')result();else showReview()}
 };
 window.addEventListener('beforeunload',ev=>{if(unfinished()){ev.preventDefault();ev.returnValue=''}});
 // Capture navigation before inline handlers can mutate unit/session or replace the exercise.
 document.addEventListener('click',ev=>{
  const b=ev.target.closest('button');if(!b||!unfinished()||b.closest('dialog'))return;
  const code=b.getAttribute('onclick')||'';
- if(/navigate\(|goSession\(|psOpen\(|v22Hub\(|v22All\(|setTense\(|practiseRelatedGrammar\(/.test(code)){
+ if(/navigate\(|goSession\(|psOpen\(|v22Hub\(|v22All\(|v23AllUnits\(|v23OpenUnit\(|openNextLesson\(|setTense\(|practiseRelatedGrammar\(/.test(code)){
  ev.preventDefault();ev.stopImmediatePropagation();window.WynnlingAttempts.leave(()=>{});
  }
 },true);

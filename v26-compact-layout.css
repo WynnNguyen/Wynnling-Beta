@@ -54,3 +54,5 @@ p{line-height:1.5}
  .v23-unit-top{margin-bottom:6px}
  .v23-unit-vn{margin-bottom:9px}
 }
+/* Narrow headers must wrap their language control instead of widening the page. */
+@media(max-width:480px){.top{flex-wrap:wrap;gap:10px}.locale-switch{max-width:100%}}

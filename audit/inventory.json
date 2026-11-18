@@ -1,0 +1,813 @@
+{
+  "inventory": [
+    {
+      "file": "AUDIT-REPORT.md",
+      "bytes": 16655,
+      "loaded": false,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "LOCALIZATION-REVIEW.md",
+      "bytes": 3667,
+      "loaded": false,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "README.md",
+      "bytes": 644,
+      "loaded": false,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "V22-VALIDATION.md",
+      "bytes": 2641,
+      "loaded": false,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "app.js",
+      "bytes": 16125,
+      "loaded": true,
+      "functions": [
+        "shell",
+        "navigate",
+        "start",
+        "render",
+        "home",
+        "curriculum",
+        "questionList",
+        "normalize",
+        "practice",
+        "isCorrect",
+        "check",
+        "next",
+        "vocabulary",
+        "review",
+        "speak"
+      ],
+      "listeners": [],
+      "renders": 1
+    },
+    {
+      "file": "cobalt.css",
+      "bytes": 3151,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "content-quality.js",
+      "bytes": 7347,
+      "loaded": true,
+      "functions": [
+        "forms",
+        "variants",
+        "candidates",
+        "hints",
+        "makeHints",
+        "extend",
+        "vocabularyAnswer"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "core-utils.js",
+      "bytes": 3680,
+      "loaded": true,
+      "functions": [
+        "getItem",
+        "setItem",
+        "readObject",
+        "shuffle",
+        "translation",
+        "uniqueQuestions",
+        "validSession",
+        "wordBank",
+        "unavailable"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "enhancements.js",
+      "bytes": 7845,
+      "loaded": true,
+      "functions": [
+        "practice"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "index.html",
+      "bytes": 2435,
+      "loaded": false,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "present-simple-v20.css",
+      "bytes": 861,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "present-simple-v20.js",
+      "bytes": 70010,
+      "loaded": true,
+      "functions": [
+        "install",
+        "selectVoice",
+        "rank",
+        "wynnlingVoiceOptions",
+        "wynnlingSelectedVoice",
+        "wynnlingSetVoice",
+        "wynnlingVoiceUI",
+        "wynnlingSpeak",
+        "psT",
+        "psSessionName",
+        "psExplain",
+        "persist",
+        "clean",
+        "score",
+        "formulaFor",
+        "speakModel",
+        "shellPS",
+        "openPS",
+        "psHub",
+        "vocabCheckStart",
+        "vocabCheckNormalize",
+        "vocabCheckCurrent",
+        "psVocabCheck",
+        "vocabCheckAnswer",
+        "vocabCheckNext",
+        "grammarStart",
+        "normalGrammar",
+        "checkGrammar",
+        "grammarWhy",
+        "psGrammar",
+        "grammarInput",
+        "grammarRetry",
+        "grammarNext",
+        "list",
+        "translationStart",
+        "translationInput",
+        "toggle",
+        "checkTranslation",
+        "translationRetry",
+        "translationNext",
+        "psTranslation",
+        "override",
+        "speak",
+        "psSyncCurriculumLanguage",
+        "render",
+        "goSession",
+        "start",
+        "curriculum"
+      ],
+      "listeners": [
+        "voiceschanged"
+      ],
+      "renders": 0
+    },
+    {
+      "file": "styles.css",
+      "bytes": 5229,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "theme.css",
+      "bytes": 1823,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v10.css",
+      "bytes": 1198,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v10.js",
+      "bytes": 5160,
+      "loaded": true,
+      "functions": [
+        "backStack",
+        "relocateNext",
+        "grammarTopics",
+        "curriculum",
+        "sessionHub",
+        "guide",
+        "drill",
+        "practice",
+        "vocabQuiz",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v11.js",
+      "bytes": 2254,
+      "loaded": true,
+      "functions": [
+        "targetedGrammarNote",
+        "drill"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v12.css",
+      "bytes": 1888,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v12.js",
+      "bytes": 619,
+      "loaded": true,
+      "functions": [
+        "drill"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v13.css",
+      "bytes": 416,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v13.js",
+      "bytes": 2486,
+      "loaded": true,
+      "functions": [
+        "drill"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v14.css",
+      "bytes": 306,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v14.js",
+      "bytes": 1280,
+      "loaded": true,
+      "functions": [
+        "guide",
+        "drill"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v15.css",
+      "bytes": 974,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v15.js",
+      "bytes": 4250,
+      "loaded": true,
+      "functions": [
+        "identifyGrammarType",
+        "practiseRelatedGrammar",
+        "curriculum",
+        "guide",
+        "practice",
+        "review"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v16.css",
+      "bytes": 3996,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v16.js",
+      "bytes": 14970,
+      "loaded": true,
+      "functions": [
+        "saveWordReviews",
+        "recordWordReview",
+        "dueWords",
+        "normalizedTranslation",
+        "translationAccepted",
+        "shell",
+        "sessionMastery",
+        "courseProgress",
+        "openNextLesson",
+        "home",
+        "check",
+        "practice",
+        "chooseMatch",
+        "startVocabQuiz",
+        "checkVocabQuiz",
+        "vocabQuiz",
+        "sessionHub",
+        "curriculum",
+        "review",
+        "review"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v17.css",
+      "bytes": 422,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v17.js",
+      "bytes": 1476,
+      "loaded": true,
+      "functions": [
+        "topicSticker",
+        "insertVocabSticker",
+        "vocabularyTopics",
+        "vocabulary"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v21-audit.js",
+      "bytes": 1417,
+      "loaded": true,
+      "functions": [
+        "runAudit"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v21-checker.js",
+      "bytes": 6730,
+      "loaded": true,
+      "functions": [
+        "basic",
+        "normal",
+        "ongoingVietnamese",
+        "grade"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v21-content.js",
+      "bytes": 11869,
+      "loaded": true,
+      "functions": [
+        "subtitleFor",
+        "applyTenseSubtitle",
+        "guide",
+        "grammarTopics",
+        "curriculum",
+        "topicSticker"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v22-attempts.js",
+      "bytes": 6539,
+      "loaded": true,
+      "functions": [
+        "begin",
+        "record",
+        "result",
+        "showReview",
+        "confirmAction",
+        "unfinished"
+      ],
+      "listeners": [
+        "cancel",
+        "beforeunload",
+        "click"
+      ],
+      "renders": 0
+    },
+    {
+      "file": "v22-everyday.css",
+      "bytes": 2470,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v22-everyday.js",
+      "bytes": 27022,
+      "loaded": true,
+      "functions": [
+        "numWords",
+        "ordinal",
+        "englishTime",
+        "hhmm",
+        "fmtAmount",
+        "strip",
+        "numeral",
+        "normalWords",
+        "validQuestion",
+        "suffix",
+        "numericAnswer",
+        "shuffleQuestions",
+        "freshQuestions",
+        "progress",
+        "saveScore",
+        "d",
+        "sampleRows",
+        "show",
+        "hub",
+        "questionPrompt",
+        "model",
+        "cue",
+        "audioText",
+        "clock",
+        "question",
+        "completed",
+        "begin",
+        "open",
+        "back",
+        "goSession",
+        "start",
+        "curriculum",
+        "render",
+        "home"
+      ],
+      "listeners": [],
+      "renders": 1
+    },
+    {
+      "file": "v22-extras.js",
+      "bytes": 5586,
+      "loaded": true,
+      "functions": [
+        "guide",
+        "matchPairs",
+        "matching",
+        "enhanceHub",
+        "v22Open",
+        "v22Hub",
+        "goSession",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v22-integration.js",
+      "bytes": 8312,
+      "loaded": true,
+      "functions": [
+        "lessonQuestions",
+        "questionList",
+        "start",
+        "check",
+        "practice",
+        "next",
+        "startDrill",
+        "drill",
+        "checkDrill",
+        "startVocabQuiz",
+        "vocabQuiz",
+        "checkVocabQuiz",
+        "wordHintsFor",
+        "building",
+        "sessionHub",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 1
+    },
+    {
+      "file": "v23-learning-units.css",
+      "bytes": 2953,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v23-learning-units.js",
+      "bytes": 11255,
+      "loaded": true,
+      "functions": [
+        "unitDirectory",
+        "returnButton",
+        "showUnitDetail",
+        "v23OpenUnit",
+        "v23AllUnits",
+        "render",
+        "curriculum",
+        "navigate",
+        "instructions",
+        "refineHub",
+        "v22Open",
+        "v22Hub",
+        "goSession",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v24-navigation-fixes.css",
+      "bytes": 1603,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v24-navigation-fixes.js",
+      "bytes": 5680,
+      "loaded": true,
+      "functions": [
+        "sticker",
+        "unitIcon",
+        "topicSticker",
+        "updateStickers",
+        "vocabularyTopics",
+        "vocabulary",
+        "grammarTopics",
+        "review",
+        "updateNavState",
+        "shell"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v25-unit4-lessons.css",
+      "bytes": 714,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v26-compact-layout.css",
+      "bytes": 2520,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v3.js",
+      "bytes": 27026,
+      "loaded": true,
+      "functions": [
+        "toggleLanguage",
+        "newQuestions",
+        "questionList",
+        "grammarReason",
+        "wordHintsFor",
+        "shell",
+        "home",
+        "curriculum",
+        "practice",
+        "check",
+        "next",
+        "vocabulary",
+        "shuffle",
+        "startMatch",
+        "prepareMatch",
+        "chooseMatch",
+        "matching",
+        "review",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v4.css",
+      "bytes": 2292,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v4.js",
+      "bytes": 28007,
+      "loaded": true,
+      "functions": [
+        "shell",
+        "home",
+        "curriculum",
+        "guide",
+        "startDrill",
+        "drill",
+        "checkDrill",
+        "advanceDrill",
+        "normalize",
+        "grammarReason",
+        "questionList",
+        "practice",
+        "guide",
+        "drill",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 1
+    },
+    {
+      "file": "v5.css",
+      "bytes": 1800,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v5.js",
+      "bytes": 16191,
+      "loaded": true,
+      "functions": [
+        "grammarAnswerCorrect",
+        "grammarExplanation",
+        "shell",
+        "home",
+        "vocabularyTopics",
+        "vocabulary",
+        "prepareMatch",
+        "drill",
+        "checkDrill",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v6.css",
+      "bytes": 1939,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v6.js",
+      "bytes": 13833,
+      "loaded": true,
+      "functions": [
+        "goSession",
+        "shell",
+        "curriculum",
+        "sessionHub",
+        "guide",
+        "vocabulary",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 1
+    },
+    {
+      "file": "v7.css",
+      "bytes": 251,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v7.js",
+      "bytes": 2406,
+      "loaded": true,
+      "functions": [
+        "guide",
+        "sessionHub"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v8.css",
+      "bytes": 1396,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v8.js",
+      "bytes": 11963,
+      "loaded": true,
+      "functions": [
+        "updateVocabRecord",
+        "startMatch",
+        "prepareMatch",
+        "chooseMatch",
+        "matching",
+        "startVocabQuiz",
+        "quizOptions",
+        "vocabQuiz",
+        "checkVocabQuiz",
+        "sessionHub",
+        "prependSessionReturn",
+        "drill",
+        "practice",
+        "review",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v9.css",
+      "bytes": 1684,
+      "loaded": true,
+      "functions": [],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "v9.js",
+      "bytes": 18543,
+      "loaded": true,
+      "functions": [
+        "shell",
+        "home",
+        "grammarTopics",
+        "guide",
+        "practice",
+        "advanceDrill",
+        "review",
+        "render"
+      ],
+      "listeners": [],
+      "renders": 0
+    },
+    {
+      "file": "vietnamese-ui.js",
+      "bytes": 3571,
+      "loaded": true,
+      "functions": [
+        "localize",
+        "render",
+        "goSession"
+      ],
+      "listeners": [],
+      "renders": 1
+    }
+  ],
+  "duplicates": [
+    {
+      "ui": 2,
+      "si": 3,
+      "key": "v3vn",
+      "index": 8,
+      "other": 3,
+      "pair": [
+        "Bạn sẽ ở lại bao lâu?",
+        "How long will you stay?"
+      ]
+    }
+  ]
+}

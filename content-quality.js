@@ -25,10 +25,11 @@ function variants(english){
  return parts.map((p,i)=>i===0||p.includes(' ')?p:lead+p);
 }
 function candidates(item,words){
+ if(!item||!Array.isArray(words))return [];
  const english=clean(item.dir==='en'||item.dir==='en-vi'?item.prompt:item.model);
  const output=[];
  for(const [bankIndex,w] of words.entries()){
-  if(!w||blocked.has(clean(w[0])))continue;
+  if(!Array.isArray(w)||typeof w[0]!=='string'||typeof w[1]!=='string'||blocked.has(clean(w[0])))continue;
   for(const expression of variants(w[0])){
    const term=clean(expression);if(blocked.has(term)||term.split(' ').length>5)continue;
    const tokens=term.split(' ');const pattern=tokens.map((token,i)=>{
@@ -46,7 +47,16 @@ function candidates(item,words){
  // Prefer the taught phrase over overlapping fragments (listen / listen to music).
  return output.filter((a,i,all)=>!all.some((b,j)=>i!==j&&b.start<=a.start&&b.end>=a.end&&(b.end-b.start>a.end-a.start||j<i&&b.end-b.start===a.end-a.start)));
 }
+const cache=new WeakMap();
 function hints(item,words){
+ if(!Array.isArray(words)||!item||typeof item.model!=='string')return [];
+ const signature=words.map(w=>Array.isArray(w)?w.join('|'):'').join('~');
+ let bank=cache.get(words);if(!bank||bank.signature!==signature){bank={signature,results:new Map()};cache.set(words,bank)}
+ const key=JSON.stringify([item.dir,item.prompt,item.model]);
+ if(bank.results.has(key))return bank.results.get(key).map(x=>({...x}));
+ const result=makeHints(item,words);if(bank.results.size>=256)bank.results.delete(bank.results.keys().next().value);bank.results.set(key,result);return result.map(x=>({...x}));
+}
+function makeHints(item,words){
  const english=clean(item.dir==='en'||item.dir==='en-vi'?item.prompt:item.model),count=english.split(' ').length;
  const limit=count>=12?4:count>=7?3:2;
  const all=candidates(item,words),chosen=[];
@@ -66,5 +76,10 @@ const supplements={
 };
 function extend(id,index,words){const seen=new Set(words.map(w=>w[0].toLowerCase()+'|'+w[2]));return [...words,...(supplements[id]?.[index]||[]).filter(w=>!seen.has(w[0].toLowerCase()+'|'+w[2]))]}
 for(const u of units.filter(u=>u.id!=='present'))for(const [i,lesson]of u.sessions.entries())lesson.words=extend(u.id,i,lesson.words);
-window.WynnlingContent={hints,candidates,extend};
+function vocabularyAnswer(word,response){
+ if(typeof word!=='string'||typeof response!=='string')return false;
+ const canonical=s=>s.normalize('NFC').toLowerCase().replace(/[’‘]/g,"'").replace(/[.!?,]+$/,'').replace(/\s+/g,' ').trim();
+ return [word,...variants(word)].some(x=>canonical(x)===canonical(response));
+}
+window.WynnlingContent={hints,candidates,extend,vocabularyAnswer};
 })();

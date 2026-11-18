@@ -29,4 +29,3 @@ if(drillTense==='present'&&signals){const section=document.createElement('sectio
 const previousVocabulary6=vocabulary;
 vocabulary=function(){previousVocabulary6();const main=document.querySelector('main');if(main){const btn=document.createElement('button');btn.className='btn outline small';btn.textContent=language==='vi'?'← Về buổi học':'← Back to session';btn.onclick=()=>goSession(unit,session);main.prepend(btn)}};
 render=function(){if(view==='home')return home();if(view==='curriculum')return curriculum();if(view==='sessionHub')return sessionHub();if(view==='guide')return guide();if(view==='drill')return drill();if(view==='practice')return practice();if(view==='vocab')return vocabulary();if(view==='vocabTopics')return vocabularyTopics();if(view==='match')return matching();if(view==='review')return review()};
-render();

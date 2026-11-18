@@ -2,7 +2,7 @@
 (function(){
 "use strict";
 function runAudit(){
- const issues=[],stats={sessions:0,questions:0,grammar:0,words:0,issues};
+ const issues=[],stats={sessions:0,questions:0,words:0,issues};
  const valid=new Set(["n","v","adj","adv","phr","pron","prep","conj"]);
  units.forEach((u,ui)=>u.sessions.forEach((s,si)=>{
   stats.sessions++;stats.words+=(s.words||[]).length;
@@ -27,26 +27,7 @@ function runAudit(){
  return stats;
 }
 window.WynnlingV21.runAudit=runAudit;
-const prevPractice=practice;
-practice=function(){
- prevPractice();
- if(unit===0||!checked||view!=="practice")return;
- const item=questionList()[q];if(!item)return;
- const result=window.WynnlingV21.grade({...item,rubric:{targetTense:units[unit].id==="continuous"?"present-continuous":"future-simple"}},answer,language);
- const panel=document.querySelector(".practice .feedback");
- if(!panel)return;
- if(result.status==="review"){
-  panel.classList.add("review");panel.style.background="#fff8e9";panel.style.borderColor="#e9d8ae";
-  const heading=panel.querySelector("strong");
-  if(heading)heading.textContent=language==="vi"?"◇ Cần giáo viên xem lại":"◇ Needs review";
-  const note=document.createElement("p");
-  note.className="v21-review-note";note.textContent=result.message;
-  panel.prepend(note);
-  const input=document.querySelector(".practice .answer");if(input){input.classList.remove("is-wrong");input.style.borderColor="#d7b771"}
- }else if(result.status==="correct"){
-  const heading=panel.querySelector("strong");if(heading)heading.textContent=language==="vi"?"✓ Đúng":"✓ Accepted";
- }
-};
+// The final integration owns feedback rendering; do not grade and decorate it twice.
 const report=runAudit();
 console.info("Wynnling v21 content audit",report);
 })();

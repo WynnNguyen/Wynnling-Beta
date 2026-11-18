@@ -1,0 +1,9 @@
+const fs=require('fs'),vm=require('vm'),path=require('path');const {ctx,run,app}=require('../tests/runtime.cjs');
+const root=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const files=fs.readdirSync(root).filter(f=>/\.(js|css|html|md)$/.test(f));let inventory=[];
+for(const file of files){const s=fs.readFileSync(path.join(root,file),'utf8');if(file.endsWith('.js'))new vm.Script(s,{filename:file});inventory.push({file,bytes:Buffer.byteLength(s),loaded:html.includes('"'+file+'"'),functions:[...s.matchAll(/(?:function\s+([\w$]+)|\b([\w$]+)\s*=\s*function)/g)].map(m=>m[1]||m[2]),listeners:[...s.matchAll(/addEventListener\??\.?(?:\()?\s*\(?(?:"|')([^"']+)/g)].map(m=>m[1]),renders:(s.match(/\brender\(\);/g)||[]).length});}
+let duplicates=[];const units=run('units');for(const [ui,u]of units.entries())for(const [si,s]of u.sessions.entries()){for(const key of ['v3vn','v3en']){const seen=new Map();for(const [i,p]of s[key].entries()){const id=p.map(x=>x.toLowerCase().replace(/[.!?,]/g,'').trim()).join('|');if(seen.has(id))duplicates.push({ui,si,key,index:i,other:seen.get(id),pair:p});seen.set(id,i)}}}
+let screens=[];for(let ui=0;ui<units.length;ui++)for(let si=0;si<units[ui].sessions.length;si++){
+ for(const action of [`goSession(${ui},${si})`,`unit=${ui};session=${si};vocabulary()`,...(ui===3?[]:[`start(${ui},${si})`,`startVocabQuiz(${ui},${si})`])]){try{run(action);screens.push({action,html:app.innerHTML})}catch(e){screens.push({action,error:String(e)})}}
+}
+fs.writeFileSync(path.join(__dirname,'inventory.json'),JSON.stringify({inventory,duplicates},null,2));fs.writeFileSync('/tmp/wynnling-screens.json',JSON.stringify(screens));console.log(JSON.stringify({files:inventory.map(i=>({file:i.file,bytes:i.bytes,loaded:i.loaded,functions:i.functions.length,startupRenders:i.renders})),duplicates,routeErrors:screens.filter(s=>s.error)},null,2));

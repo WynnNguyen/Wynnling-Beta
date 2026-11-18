@@ -33,8 +33,19 @@ function fmtAmount(n){return n.toLocaleString("en-US")+" ₫"}
 function strip(s){return String(s).toLowerCase().normalize("NFC").replace(/[’‘]/g,"'").replace(/[,₫.]/g," ").replace(/\s+/g," ").trim()}
 function numeral(s){const raw=String(s).trim().replace(/\s*(?:₫|đ|vnd)$/i,"");if(!/^(?:\d+|\d{1,3}(?:,\d{3})+)$/.test(raw))return NaN;const n=Number(raw.replace(/,/g,""));return Number.isSafeInteger(n)&&n<=999999999?n:NaN}
 function normalWords(s){return strip(s).replace(/\b(and)\b/g,"").replace(/-/g," ").replace(/\bdongs?\b/g,"dong").replace(/\s+/g," ").trim()}
+function validQuestion(q){
+ if(!q||!['words','digits'].includes(q.mode))return false;
+ if(q.kind==='number'||q.kind==='money')return Number.isInteger(q.value)&&q.value>=0&&q.value<=999999999;
+ if(q.kind==='ordinal')return Number.isInteger(q.value)&&q.value>=1&&q.value<=31;
+ if(q.kind==='day')return days.includes(q.value);
+ if(q.kind==='month')return months.includes(q.value);
+ if(q.kind==='time')return Number.isInteger(q.hour)&&q.hour>=0&&q.hour<24&&Number.isInteger(q.minute)&&q.minute>=0&&q.minute<60;
+ if(q.kind==='date')return Number.isInteger(q.year)&&q.year>=1&&q.year<=9999&&Number.isInteger(q.month)&&q.month>=1&&q.month<=12&&Number.isInteger(q.day)&&q.day>=1&&q.day<=new Date(q.year,q.month,0).getDate();
+ return false;
+}
+function suffix(n){return n%100>=11&&n%100<=13?'th':n%10===1?'st':n%10===2?'nd':n%10===3?'rd':'th'}
 function numericAnswer(q,entered){
- if(!entered.trim())return false;
+ if(!validQuestion(q)||typeof entered!=='string'||!entered.trim())return false;
  const raw=entered.trim();
  if(q.kind==="number"||q.kind==="money"){
   if(!Number.isInteger(q.value)||q.value<0||q.value>999999999)return false;
@@ -43,10 +54,14 @@ function numericAnswer(q,entered){
   const models=q.kind==="money"?[numWords(q.value)+" dong",numWords(q.value)+" vietnamese dong",numWords(q.value)+" vnd"]:[numWords(q.value)];
   return models.some(x=>normalWords(x)===n);
  }
- if(q.kind==="ordinal")return q.mode==="digits"?new RegExp("^"+q.value+"(?:st|nd|rd|th)?$","i").test(raw):normalWords(raw)===normalWords(ordinal(q.value));
+ if(q.kind==="ordinal")return q.mode==="digits"?new RegExp("^"+q.value+"(?:"+suffix(q.value)+")?$","i").test(raw):normalWords(raw)===normalWords(ordinal(q.value));
  if(q.kind==="day"||q.kind==="month")return strip(raw)===strip(q.value);
  if(q.kind==="date"){
-  if(q.mode==="words")return [months[q.month-1]+" "+ordinal(q.day),ordinal(q.day)+" "+months[q.month-1],months[q.month-1]+" "+q.day,q.day+" "+months[q.month-1]].some(x=>normalWords(x)===normalWords(raw));
+  if(q.mode==="words"){
+   const bases=[months[q.month-1]+" "+ordinal(q.day),ordinal(q.day)+" "+months[q.month-1],months[q.month-1]+" "+q.day,q.day+" "+months[q.month-1],"the "+ordinal(q.day)+" of "+months[q.month-1]];
+   const years=[String(q.year),numWords(q.year)];if(q.year>=2000&&q.year<2100)years.push("twenty "+numWords(q.year%100));
+   return bases.flatMap(x=>[x,...years.map(year=>x+" "+year)]).some(x=>normalWords(x)===normalWords(raw));
+  }
   const p=raw.replace(/\s/g,"").match(/^(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{4}))?$/);
   return !!p&&+p[1]===q.day&&+p[2]===q.month&&(!p[3]||+p[3]===q.year);
  }
@@ -77,8 +92,9 @@ function shuffleQuestions(items){
 }
 const lastDeckSignatures=new Map(),recentBySession=new Map();
 function freshQuestions(si,mode,count){
+ if(!Number.isInteger(si)||si<0||si>4||!Number.isInteger(count)||count<1||count>200)return [];
  const listen=mode==="listen",out=[],used=new Set(),previous=recentBySession.get(si)||new Set();
- const add=q=>{const key=[q.kind,q.value,q.day,q.month,q.hour,q.minute].join("|");if(used.has(key)||previous.has(key))return;used.add(key);out.push({...q,mode:listen?(q.kind==="day"||q.kind==="month"?"words":"digits"):q.mode||"words",session:si})};
+ const add=q=>{if(!validQuestion(q))return;const key=[q.kind,q.value,q.day,q.month,q.hour,q.minute].join("|");if(used.has(key)||previous.has(key))return;used.add(key);out.push({...q,mode:listen?(q.kind==="day"||q.kind==="month"?"words":"digits"):q.mode||"words",session:si})};
  const rand=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
  const date=()=>{const month=rand(1,12),maxDay=new Date(2026,month,0).getDate();return {kind:"date",day:rand(1,maxDay),month,year:2026,mode:Math.random()<.5?"words":"digits"}};
  let numberIndex=0;
@@ -92,6 +108,12 @@ function freshQuestions(si,mode,count){
  for(let attempts=0;out.length<count&&attempts<count*100;attempts++){
   let q=si===4?makers[attempts%4]():makers[si]();
   add(q);
+ }
+ // Bounded deterministic fallback if randomness cannot supply a full verified deck.
+ for(let i=0;out.length<count&&i<count*4;i++){
+  const kind=si===4?i%4:si;
+  const candidate=kind===0?{kind:'number',value:100+i,mode:'words'}:kind===1?{kind:'date',day:i%28+1,month:Math.floor(i/28)%12+1,year:2026,mode:'words'}:kind===2?{kind:'time',hour:Math.floor(i/60)%24,minute:i%60,mode:'words'}:{kind:'money',value:10000+i*100,mode:'words'};
+  add(candidate);
  }
  // Do not repeat an identical full attempt when users restart practice or listening.
  const key=si+"-"+mode,signature=out.map(q=>[q.kind,q.value,q.day,q.month,q.hour,q.minute].join(":")).join(";");
@@ -108,8 +130,8 @@ tenseGuides.everyday={title:unit4.name,uses:{en:[],vi:[]},types:[],signals:[]};
 const uiIndex=units.length-1;
 const state={session:0,stage:"hub",index:0,answered:false,input:"",correct:false,mode:"practice",deck:[],score:0};
 const scoresKey="wynnling-v22-everyday-progress";
-function progress(){try{return JSON.parse(localStorage.getItem(scoresKey)||"{}")}catch{return{}}}
-function saveScore(){const data=progress(),key=state.mode==="assessment"?"assessment-"+state.session:state.session+"-"+state.mode;data[key]=Math.max(data[key]||0,state.score);localStorage.setItem(scoresKey,JSON.stringify(data))}
+function progress(){try{return WynnlingStorage.object(scoresKey)}catch{return{}}}
+function saveScore(){const data=progress(),key=state.mode==="assessment"?"assessment-"+state.session:state.session+"-"+state.mode;data[key]=Math.max(data[key]||0,state.score);WynnlingStorage.setItem(scoresKey,JSON.stringify(data))}
 function d(s){return escapeHtml(String(s))}
 function sampleRows(s){return s.samples.map(([a,b])=>'<div class="v22-sample"><strong>'+d(language==="vi"?({Appointment:"Cuộc hẹn",Shopping:"Mua sắm",'Class schedule':"Lịch học",Birthday:"Sinh nhật"}[a]||a):a)+'</strong><span>'+d(b)+'</span></div>').join("")}
 function show(content){shell('<div class="practice v22"><div class="eyebrow">'+tr("unit")+' · '+tr("name")+'</div>'+content+'</div>')}
@@ -141,7 +163,7 @@ function cue(q){
  if(q.kind==="ordinal")return q.mode==="digits"?ordinal(q.value):q.value+((q.value%10===1&&q.value!==11)?"st":(q.value%10===2&&q.value!==12)?"nd":(q.value%10===3&&q.value!==13)?"rd":"th");
  if(q.kind==="day"||q.kind==="month")return ({"Monday":"Thứ Hai","Tuesday":"Thứ Ba","Wednesday":"Thứ Tư","Thursday":"Thứ Năm","Friday":"Thứ Sáu","Saturday":"Thứ Bảy","Sunday":"Chủ Nhật","January":"Tháng Một","February":"Tháng Hai","March":"Tháng Ba","April":"Tháng Tư","May":"Tháng Năm","June":"Tháng Sáu","July":"Tháng Bảy","August":"Tháng Tám","September":"Tháng Chín","October":"Tháng Mười","November":"Tháng Mười Một","December":"Tháng Mười Hai"})[q.value];
  if(q.kind==="date")return q.mode==="digits"?months[q.month-1]+" "+ordinal(q.day)+", "+q.year:String(q.day).padStart(2,"0")+"/"+String(q.month).padStart(2,"0")+"/"+q.year;
- if(q.kind==="time")return q.mode==="digits"?englishTime(q.hour,q.minute,"past"):hhmm(q.hour,q.minute);
+ if(q.kind==="time")return q.mode==="digits"?englishTime(q.hour,q.minute,"past")+(q.hour<12?" a.m.":" p.m."):hhmm(q.hour,q.minute);
  if(q.kind==="money")return q.mode==="digits"?numWords(q.value)+" dong":fmtAmount(q.value);
  return "";
 }
@@ -161,21 +183,23 @@ function question(){
  const feedback=state.answered?'<div class="feedback '+(state.correct?"":"review")+'"><strong>'+tr(state.correct?"correct":"wrong")+'</strong><p>'+tr("reference")+': <b>'+d(model(q))+'</b></p>'+(state.correct?"":'<p>'+tr("review")+'</p>')+'</div>':"";
  show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><h1>'+d(language==="vi"?sessionData[state.session].vn:sessionData[state.session].title)+' · '+tr(state.mode==="assessment"?"test":state.mode==="listen"?"listen":"practice")+'</h1><p class="v22-vn">'+d(language==="vi"?sessionData[state.session].title:sessionData[state.session].vn)+'</p><div class="row muted"><span>'+tr("questions")+' '+(state.index+1)+' / '+state.deck.length+'</span><span>'+tr("score")+': '+state.score+'</span></div><div class="progress meter"><div style="width:'+Math.round(100*state.index/state.deck.length)+'%"></div></div><div class="card"><p class="v22-instruction">'+d(questionPrompt(q))+'</p>'+shown+'<label for="v22Answer"><b>'+tr("answer")+'</b></label><input id="v22Answer" class="short-answer" style="max-width:100%" autocomplete="off" value="'+d(state.input)+'" '+(state.answered?"disabled":"")+' oninput="v22Input(this.value)" placeholder="'+tr("prompt")+'"><div class="check-next-row"><button class="btn" onclick="v22Check()" '+(state.answered?"disabled":"")+'>'+tr("check")+'</button>'+(state.answered?'<button class="btn secondary" onclick="v22Next()">'+tr(state.index===state.deck.length-1?"finish":"next")+' →</button>':"")+'</div>'+feedback+'</div>');
 }
-function completed(){saveScore();WynnlingAttempts.finish();return;const total=state.deck.length;show('<button class="btn outline small" onclick="v22Hub()">← '+tr("back")+'</button><div class="card"><h1>'+tr("result")+'</h1><div class="v22-big-score">'+state.score+' / '+total+'</div><p>'+tr("score")+'</p><div class="actions"><button class="btn" onclick="v22Begin(\''+state.mode+'\')">'+tr("again")+'</button><button class="btn secondary" onclick="v22Hub()">'+tr("back")+'</button></div></div>')}
+function completed(){saveScore();WynnlingAttempts.finish()}
+
 function begin(mode){WynnlingAttempts.begin({restart:()=>begin(mode)});
  state.mode=mode;state.index=0;state.input="";state.answered=false;state.correct=false;state.score=0;
  const count=mode==="practice"?30:mode==="listen"?10:state.session===4?20:10;
  let questions=freshQuestions(state.session,mode,count);
+ if(questions.length!==count)return WynnlingData.unavailable();
  state.deck=questions;
  state.stage="question";view="v22Question";question();
 }
-function open(si){unit=uiIndex;session=si;state.session=si;state.stage="hub";view="v22Hub";hub();window.scrollTo(0,0)}
+function open(si){if(!Number.isInteger(si)||!sessionData[si])return WynnlingData.unavailable();unit=uiIndex;session=si;state.session=si;state.stage="hub";view="v22Hub";hub();window.scrollTo(0,0)}
 function back(){unit=uiIndex;view="curriculum";render();window.scrollTo(0,0)}
-window.v22Open=open;window.v22All=back;window.v22Hub=()=>open(state.session);window.v22Begin=begin;window.v22Input=x=>{state.input=x};window.v22Check=()=>{if(state.answered||!state.input.trim())return;const q=state.deck[state.index];state.correct=numericAnswer(q,state.input);state.score+=Number(state.correct);WynnlingAttempts.record(state.index,{prompt:questionPrompt(q)+" "+cue(q),model:model(q)},state.input,state.correct,x=>numericAnswer(q,x));state.answered=true;question()};window.v22Next=()=>{if(!state.answered)return;state.index++;state.answered=false;state.input="";question()};window.v22Speak=(rate)=>{const q=state.deck[state.index];if(window.wynnlingSpeak)window.wynnlingSpeak(audioText(q),rate);else if(typeof speak==="function")speak(audioText(q),rate)};
+window.v22Open=open;window.v22All=back;window.v22Hub=()=>open(state.session);window.v22Begin=begin;window.v22Input=x=>{state.input=x};window.v22Check=()=>{if(state.answered||!state.input.trim())return;const q=state.deck[state.index];if(!validQuestion(q))return WynnlingData.unavailable();state.correct=numericAnswer(q,state.input);state.score+=Number(state.correct);WynnlingAttempts.record(state.index,{prompt:questionPrompt(q)+" "+cue(q),model:model(q)},state.input,state.correct,x=>numericAnswer(q,x));state.answered=true;question()};window.v22Next=()=>{if(!state.answered)return;state.index++;state.answered=false;state.input="";question()};window.v22Speak=(rate)=>{const q=state.deck[state.index];if(!validQuestion(q))return; if(window.wynnlingSpeak)window.wynnlingSpeak(audioText(q),rate);else if(typeof speak==="function")speak(audioText(q),rate)};
 const priorGoSession=goSession;goSession=function(ui,si){if(ui===uiIndex)return open(si);return priorGoSession(ui,si)};
 const priorStart=start;start=function(ui,si,mode){if(ui===uiIndex){open(si);return begin(mode==="test"?"assessment":"practice")}return priorStart(ui,si,mode)};
 const priorCurriculum=curriculum;curriculum=function(){if(unit!==uiIndex)return priorCurriculum();const p=progress();shell('<div class="eyebrow">'+tr("unit")+' · A1–A2</div><h1>'+tr("name")+'</h1><p class="v22-vn">'+tr("sub")+'</p><p>'+tr("intro")+'</p><div class="v22-unit-list">'+sessionData.map((s,i)=>'<div class="card v22-unit-row"><div class="num">'+(i+1)+'</div><div class="v22-unit-info"><h3>'+d(language==="vi"?s.vn:s.title)+'</h3><p class="v22-vn">'+d(language==="vi"?s.title:s.vn)+'</p><small>'+tr("practice")+': 30 '+tr("questions")+' · '+tr("listen")+': 10 '+tr("questions")+' · '+tr("test")+': '+(i===4?20:10)+' '+tr("questions")+'</small></div><span class="tag">'+(p["assessment-"+i]===undefined?"—":p["assessment-"+i]+"/"+(i===4?20:10))+'</span><button class="btn small" onclick="v22Open('+i+')">'+tr("go")+' →</button></div>').join("")+'</div><p class="note">'+tr("note")+'</p>')};
 const priorRender=render;render=function(){if(view==="v22Hub")return hub();if(view==="v22Question")return question();return priorRender()};
 const priorHome=home;home=function(){priorHome();const main=document.querySelector("main");if(main){const count=main.querySelector(".overview-top .tag");if(count)count.title="Unit 04 includes a separate numerical assessment"}};
-window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,sessionData,uiIndex,freshQuestions};
+window.WynnlingV22={numWords,ordinal,englishTime,numericAnswer,sessionData,uiIndex,freshQuestions,validQuestion};
 })();

@@ -22,4 +22,3 @@ drill=function(){precedingDrill13();if(!drillChecked)return;const item=grammarIt
   if(correct){panel.innerHTML=`<div class="compact-result"><span>✓ ${language==='vi'?'Chính xác':'Correct'}</span><span class="answer-meaning">${wording}</span></div>`}
   else{const first=panel.querySelector('p');if(first)first.innerHTML=`<b>${language==='vi'?'Từ đúng':'Correct form'}:</b> <span class="answer-meaning">${wording}</span>`}
 };
-render();

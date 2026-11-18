@@ -1,4 +1,3 @@
 // Keep successful grammar feedback to one line and navigation side-by-side.
 const priorDrill12=drill;
 drill=function(){priorDrill12();if(!drillChecked)return;const success=drillAnswers[drillAnswers.length-1]?.correct;if(!success)return;const panel=document.querySelector('.practice .feedback');if(!panel)return;const item=grammarItems[drillTense][drillType][drillIndex];panel.innerHTML=`<div class="compact-result"><span>✓ ${language==='vi'?'Chính xác':'Correct'}</span><span class="correct-word">${escapeHtml(item[1])}</span></div>`;panel.classList.remove('review');panel.querySelector('.drill-note')?.remove()};
-render();

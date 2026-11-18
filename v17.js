@@ -5,4 +5,3 @@ const prevVocabularyTopics17=vocabularyTopics;
 vocabularyTopics=function(){prevVocabularyTopics17();const topics=units.flatMap(u=>u.sessions);document.querySelectorAll('.topic-card').forEach((card,i)=>insertVocabSticker(card,topics[i]?.name||''))};
 const prevVocabulary17=vocabulary;
 vocabulary=function(){prevVocabulary17();insertVocabSticker(document.querySelector('main h1'),current().name)};
-render();

@@ -1,0 +1,21 @@
+Wynnling regression checks passed (30 scripts).\nv22: 25 semantic cases, numerical boundaries/9 bands, 9,000 generated items, immutable ledger and mistake review passed.
+Application integration passed: 30 shipped scripts, 21 sessions, 240 translation models, 4 exercise engines, cumulative scope, matching, repeated submissions.
+Content quality passed: 240 bilingual questions, 488 vocabulary entries, 493 lesson-scoped hints, 6 longer sentences; homework forms, ongoing negatives, retained banks and both UI languages.
+PASS one startup render; one document click and beforeunload listener
+PASS corrupt and malformed storage never prevents startup
+PASS blocked storage keeps attempts usable in memory
+PASS quota fallback supersedes stale stored values and preserves field types
+PASS Present Simple navigation shares the correct global session
+PASS Present Simple first answers update progress once; completion reaches dashboard
+PASS session-specific Present Simple grammar mastery is persisted
+PASS empty or malformed question banks fail safely
+PASS exact duplicates stay in source bank but not in active attempt
+PASS model-specific Future question and negative formulas
+PASS stale matching timeout cannot clear a different round
+PASS vocabulary slash alternatives are accepted only in recall
+PASS hints return safe copies and invalidate after bank edits
+PASS numeric full dates, ordinal suffixes and malformed data
+PASS all generated numerical questions have verified answers; frozen randomness fallback
+PASS numerical assessment completion contributes to course mastery
+Audit regression groups passed: 16
+Integrity checks passed: 52 unique assets, 180 Present Simple IDs, valid vocabulary/formulas, unique quiz options, 3462 compiled inline handlers across both languages.
