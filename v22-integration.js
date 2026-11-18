@@ -36,8 +36,7 @@ for(const u of units)for(const lesson of u.sessions){
  if(pool)for(const key of ['v3vn','v3en'])for(const pair of lesson[key]||[]){const index=key==='v3vn'?1:0;pair[index]=pair[index].replace(/\b(?<!swimming )pool\b/gi,'swimming pool')}
 }
 // Word hints are lexical help, never a hidden rewrite of the model sentence.
-const oldHints=wordHintsFor;
-wordHintsFor=function(x){return oldHints(x).filter(w=>!['will','do','does','am','is','are','the','a','i','you','she','he','we','they'].includes(w[0].toLowerCase()))};
+wordHintsFor=function(x){return WynnlingContent.hints(x,x.source.words).map(h=>[h.english,h.vietnamese,h.pos])};
 // Sentence building is grammar practice. All tokens come from that session's existing model.
 let build=null;
 function building(){

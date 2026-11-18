@@ -6,7 +6,7 @@ const extraContinuous=[
 ["Chị gái tôi đang đọc sách trong phòng.","My older sister is reading a book in her room."],
 ["Mẹ tôi đang nấu bữa tối trong bếp.","My mother is cooking dinner in the kitchen."],
 ["Chúng tôi đang nghe nhạc ở nhà.","We are listening to music at home."],
-["Bạn đang viết bài tập về nhà à?","Are you writing your homework?"],
+["Bạn có đang làm bài tập về nhà không?","Are you doing your homework?"],
 ["Bố tôi không xem TV lúc này.","My father is not watching TV at the moment."]
 ],
 [
@@ -34,7 +34,7 @@ const extraContinuous=[
 ["Tôi đang đi bộ đến siêu thị.","I am walking to the supermarket."],
 ["Chị gái tôi đang mua đồ ăn tại cửa hàng.","My older sister is buying food at the shop."],
 ["Họ không lái xe lúc này.","They are not driving at the moment."],
-["Anh ấy đang chờ xe buýt ở trạm.","He is waiting for the bus at the bus stop."],
+["Anh ấy đang chờ xe buýt ở trạm xe buýt.","He is waiting for the bus at the bus stop."],
 ["Bạn đang gọi món gì ở nhà hàng?","What are you ordering at the restaurant?"]
 ]
 ];
@@ -70,7 +70,7 @@ const extraFuture=[
 [
 ["Tôi nghĩ ngày mai trời sẽ đẹp.","I think the weather will be nice tomorrow."],
 ["Em trai tôi sẽ vượt qua kỳ thi.","My younger brother will pass the exam."],
-["Tôi hy vọng tiếng Anh của mình sẽ tốt hơn.","I hope my English will be better."],
+["Tôi hy vọng khả năng tiếng Anh của mình sẽ tốt hơn.","I hope my English will be better."],
 ["Bạn sẽ làm gì trong tương lai?","What will you do in the future?"],
 ["Chúng tôi sẽ không từ bỏ hy vọng.","We will not give up hope."]
 ]
@@ -97,7 +97,7 @@ for(const unit of units){for(const s of unit.sessions){
 const labels={present:"Thì hiện tại đơn",continuous:"Thì hiện tại tiếp diễn",future:"Thì tương lai đơn"};
 window.WynnlingV21=Object.assign(window.WynnlingV21||{},{tenseLabels:labels,extraQuestions:50});
 function subtitleFor(id){return '<small class="v21-tense-subtitle" style="display:block;font:500 12px/1.6 sans-serif;color:#6c83a3;margin-top:4px">'+labels[id]+'</small>'}
-function applyTenseSubtitle(id,selector){const e=document.querySelector(selector);if(e&&!e.querySelector(".v21-tense-subtitle")&&labels[id])e.insertAdjacentHTML("beforeend",subtitleFor(id))}
+function applyTenseSubtitle(id,selector){const e=document.querySelector(selector);if(e&&!e.querySelector(".v21-tense-subtitle")&&labels[id]&&!e.textContent.includes(labels[id]))e.insertAdjacentHTML("beforeend",subtitleFor(id))}
 const prevGuide=guide;
 guide=function(){prevGuide();
  applyTenseSubtitle(drillTense,"main .overview-section h2");

@@ -25,7 +25,7 @@ function confirmAction(kind,action){
  pending=action;
  const restart=kind==='restart';
  const dialog=document.createElement('dialog');dialog.id='wynnling-confirm';
- dialog.innerHTML=`<p>${restart?'Are you sure you want to restart this exercise? Your answers from this attempt will be cleared.':"You haven’t finished this exercise. Are you sure you want to leave? Your current progress will be lost."}</p><div class="actions"><button class="btn outline" data-cancel>${restart?'Cancel':'Continue Learning'}</button><button class="btn" data-confirm>${restart?'Restart':'Leave Exercise'}</button></div>`;
+ dialog.innerHTML=`<p>${restart?text('Are you sure you want to restart this exercise? Your answers from this attempt will be cleared.','Bạn có chắc muốn làm lại bài tập này không? Các câu trả lời của lượt hiện tại sẽ bị xóa.'):text("You haven’t finished this exercise. Are you sure you want to leave? Your current progress will be lost.",'Bạn chưa hoàn thành bài tập. Bạn có chắc muốn thoát không? Tiến độ của lượt hiện tại sẽ không được lưu.')}</p><div class="actions"><button class="btn outline" data-cancel>${restart?text('Cancel','Hủy'):text('Continue Learning','Tiếp tục học')}</button><button class="btn" data-confirm>${restart?text('Restart','Làm lại'):text('Leave Exercise','Thoát bài tập')}</button></div>`;
  document.body.append(dialog);dialog.querySelector('[data-cancel]').onclick=()=>{pending=null;dialog.close();dialog.remove()};dialog.querySelector('[data-confirm]').onclick=()=>{const fn=pending;pending=null;active=null;dialog.close();dialog.remove();fn()};dialog.addEventListener('cancel',()=>{pending=null;dialog.remove()});dialog.showModal();
 }
 function unfinished(){return active&&!active.complete;}

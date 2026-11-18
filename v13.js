@@ -5,8 +5,8 @@ const grammarWordMeanings={
  'am':'là / ở (với I)','is':'là / ở (số ít)','are':'là / ở (số nhiều / you)',
  'do':'trợ động từ với I/you/we/they','does':'trợ động từ với he/she/it',
  'do not':'không (I/you/we/they)','does not':'không (he/she/it)',
- 'reading':'đang đọc','cooking':'đang nấu ăn','playing':'đang chơi','listening':'đang nghe','studying':'đang học',
- 'am not':'không đang (với I)','is not':'không đang (số ít)','are not':'không đang (số nhiều)',
+ 'reading':'đọc (dạng V-ing)','cooking':'nấu ăn (dạng V-ing)','playing':'chơi (dạng V-ing)','listening':'nghe (dạng V-ing)','studying':'học (dạng V-ing)',
+ 'am not':'dạng phủ định của am (đi với I)','is not':'dạng phủ định của is (đi với he/she/it hoặc danh từ số ít)','are not':'dạng phủ định của are (đi với you/we/they hoặc danh từ số nhiều)',
  'will':'sẽ','will not':'sẽ không','be':'là / ở / trở nên',
  'finish':'hoàn thành','start':'bắt đầu','prepare':'chuẩn bị','visit':'thăm','make':'làm / tạo'
 };
